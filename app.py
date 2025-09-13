@@ -59,7 +59,16 @@ def counter():
             </body>
         </html>'''
 
-
 @app.route("/info")
 def info():
     return redirect("/author")
+
+@app.route("/lab1/created")
+def created():
+    return '''<!doctype html>
+        <html>
+            <body>
+                <h1>Создано успешно</h1>
+                <div><i>что-то создано...</i></div>
+            </body>
+        </html>''', 201
