@@ -1,5 +1,6 @@
 from flask import Flask, url_for
 app = Flask(__name__)
+count = 0
 
 @app.route("/")
 @app.route("/web")
@@ -39,4 +40,14 @@ def image():
            </body>
         </html>'''
 
+@app.route("/counter")
+def counter():
+    global count
+    count += 1
+    return '''<!doctype html>
+        <html>
+            <body>
+                Сколько раз вы сюда заходили: ''' + str(count) + '''
+            </body>
+        </html>'''
 
