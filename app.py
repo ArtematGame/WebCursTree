@@ -1,4 +1,4 @@
-from flask import Flask, url_for, request
+from flask import Flask, url_for, request, redirect
 import datetime
 app = Flask(__name__)
 count = 0
@@ -58,3 +58,8 @@ def counter():
                 Ваш IP-адрес: ''' + str(client_ip) + ''' <br>
             </body>
         </html>'''
+
+
+@app.route("/info")
+def info():
+    return redirect("/author")
