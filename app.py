@@ -3,6 +3,10 @@ import datetime
 app = Flask(__name__)
 count = 0
 
+@app.errorhandler(404)
+def not_found(err):
+    return "нет такой страницы", 404
+
 @app.route("/")
 @app.route("/web")
 def web():
