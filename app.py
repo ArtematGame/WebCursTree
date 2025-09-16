@@ -111,7 +111,11 @@ def image():
                 <img src="''' + img_path + '''">
                 <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
            </body>
-        </html>'''
+        </html>''', {
+            "Content-Language": "en, ase, ru",
+            "Car-Model": "Land-Cruiser-200",
+            "Author": "Shelmin Artem"
+            }
 
 @app.route("/lab1/counter")
 def counter():
