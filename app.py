@@ -48,12 +48,12 @@ def lab1():
             </header>
             
             <main>
-                <p>
+                <div>
                 Flask — фреймворк для создания веб-приложений на языке программирования Python, 
                 использующий набор инструментов Werkzeug, а также шаблонизатор Jinja2. Относится к категории 
                 так называемых микрофреймворков — минималистичных каркасов веб-приложений, сознательно 
                 предоставляющих лишь самые базовые возможности.
-                </p>
+                </div>
                 <a href="/">Меню лабораторных работ</a>
             </main>
     
@@ -64,7 +64,6 @@ def lab1():
         </html>'''
 
 @app.route("/lab1/web")
-@app.route("/")
 def web():
     return '''<!doctype html>
         <html>
@@ -155,3 +154,109 @@ def created():
                 <div><i>что-то создано...</i></div>
             </body>
         </html>''', 201
+
+
+@app.route("/lab1/400")
+def code400():
+    css_style = url_for('static', filename='style.css')
+    return '''<!doctype html>
+        <html> 
+        <link rel="stylesheet" href="''' + css_style + '''">
+           <body>
+                <title>НГТУ, ФБ, Лабораторная работа 1</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
+                <div>Код 400 Bad Request указывает, что сервер не может обработать запрос из-за неверного синтаксиса.</div>
+                <a href="/lab1">Меню лабораторной работы 1</a>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
+          </body>
+        </html>''', 400
+
+@app.route("/lab1/401")
+def code401():
+    css_style = url_for('static', filename='style.css')
+    return '''<!doctype html>
+        <html> 
+        <link rel="stylesheet" href="''' + css_style + '''">
+           <body>
+                <title>НГТУ, ФБ, Лабораторная работа 1</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
+                <div>Код 401 Unauthorized указывает, что запрос не был применён, поскольку ему не хватает действительных учётных данных для целевого ресурса.</div>
+                <a href="/lab1">Меню лабораторной работы 1</a>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
+          </body>
+        </html>''', 401
+
+@app.route("/lab1/402")
+def code402():
+    css_style = url_for('static', filename='style.css')
+    return '''<!doctype html>
+        <html> 
+        <link rel="stylesheet" href="''' + css_style + '''">
+           <body>
+                <title>НГТУ, ФБ, Лабораторная работа 1</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
+                <div>Код 402 Payment Required указывает, что запрос не может быть обработан до тех пор, пока не будет произведена оплата.</div>
+                <a href="/lab1">Меню лабораторной работы 1</a>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
+          </body>
+        </html>''', 402
+
+@app.route("/lab1/403")
+def code403():
+    css_style = url_for('static', filename='style.css')
+    return '''<!doctype html>
+        <html> 
+        <link rel="stylesheet" href="''' + css_style + '''">
+           <body>
+                <title>НГТУ, ФБ, Лабораторная работа 1</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
+                <div>Код 403 Forbidden указывает, что сервер понял запрос, но отказывается его авторизовать.</div>
+                <a href="/lab1">Меню лабораторной работы 1</a>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
+          </body>
+        </html>''', 403
+
+@app.route("/lab1/404")
+def code404():
+    css_style = url_for('static', filename='style.css')
+    return '''<!doctype html>
+        <html> 
+        <link rel="stylesheet" href="''' + css_style + '''">
+           <body>
+                <title>НГТУ, ФБ, Лабораторная работа 1</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
+                <div>Код 404 Not Found указывает, что сервер не может найти запрашиваемый ресурс.</div>
+                <a href="/lab1">Меню лабораторной работы 1</a>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
+          </body>
+        </html>''', 404
+
+@app.route("/lab1/405")
+def code405():
+    css_style = url_for('static', filename='style.css')
+    return '''<!doctype html>
+        <html> 
+        <link rel="stylesheet" href="''' + css_style + '''">
+           <body class=>
+                <title>НГТУ, ФБ, Лабораторная работа 1</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
+                <div>Код 405 Method Not Allowed указывает, что метод запроса известен серверу, но не поддерживается целевым ресурсом.</div>
+                <a href="/lab1">Меню лабораторной работы 1</a>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
+          </body>
+        </html>''', 405
+
+@app.route("/lab1/418")
+def code418():
+    css_style = url_for('static', filename='style.css')
+    return '''<!doctype html>
+        <html> 
+        <link rel="stylesheet" href="''' + css_style + '''">
+           <body>
+                <title>НГТУ, ФБ, Лабораторная работа 1</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
+                <div>Код 418 I'm a teapot указывает, что сервер отказывается заваривать кофе в чайнике. Это шуточный код ошибки.</div>
+                <a href="/lab1">Меню лабораторной работы 1</a>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
+          </body>
+        </html>''', 418
