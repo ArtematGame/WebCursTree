@@ -259,19 +259,35 @@ def code403():
           </body>
         </html>''', 403
 
-@app.route("/lab1/404")
-def code404():
-    css_style = url_for('static', filename='style.css')
-    img_path = url_for("static", filename="404.png")
+logs=""
+@app.errorhandler(404)
+def not_found(err):
+    css = url_for('static', filename='style.css')
+    error_img = url_for('static', filename='404.png')
+    
+    global logs
+    client_ip = request.remote_addr
+    time = datetime.datetime.today()
+    url = request.url
+    
+    logs += '''<div class="log-entry">[<i>''' + str(time) + '''</i>, пользователь <i>''' + client_ip + '''</i>] зашел на адрес: <i>''' + url + '''</i></div>'''
+    
+
     return '''<!doctype html>
         <html> 
-        <link rel="stylesheet" href="''' + css_style + '''">
+        <link rel="stylesheet" href="''' + css + '''">
            <body>
                 <title>НГТУ, ФБ, Лабораторная работа 1</title>
                 <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
-                <img src="''' + img_path + '''">
+                <img src="''' + error_img + '''">
                 <div>Код 404 Not Found указывает, что сервер не может найти запрашиваемый ресурс.</div>
-                <a href="/lab1">Меню лабораторной работы 1</a>
+                <div style="text-align: center;">
+                    <a href="/lab1">Меню лабораторной работы 1</a>
+                </div>
+                <div>IP-адрес пользователя: ''' + client_ip + '''</div>
+                <div>Дата доступа: ''' + str(time) + '''</div>
+                <div>Лог посещений:</div>
+                ''' + logs + '''
                 <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
           </body>
         </html>''', 404
@@ -335,3 +351,4 @@ def not_found2(err):
                 <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
           </body>
         </html>''', 500
+
