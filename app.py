@@ -34,50 +34,48 @@ def index():
 
 @app.route("/lab1")
 def lab1():
-    css_path = url_for("static", filename="style.css")
+    css_style = url_for("static", filename="style.css")
     return '''<!doctype html>
         <html>
-        <head>
-            <title>Лабораторныя 1</title>
-        </head>
-        <body>
-            <header>
-                <link rel="stylesheet" href="''' + css_path + '''">
-            </header>
-            
-            <div>
-            Flask — фреймворк для создания веб-приложений на языке программирования Python, 
-            использующий набор инструментов Werkzeug, а также шаблонизатор Jinja2. Относится к категории 
-            так называемых микрофреймворков — минималистичных каркасов веб-приложений, сознательно 
-            предоставляющих лишь самые базовые возможности.
-            </div>
-            <div>
-                <a href="/">Меню лабораторных работ</a>
-            </div>
-            <h2>Список роутов:</h2>
-                    <div>
-                        <ol>
-                            <li><a href="/">Корень сайта</a><br>
-                            <li><a href="/index">Главная страница</a><br>
-                            <li><a href="/lab1/web">Веб-сервер</a><br>
-                            <li><a href="/lab1/author">Автор</a><br>
-                            <li><a href="/lab1/image">Изображение</a><br>
-                            <li><a href="/lab1/counter">Счетчик</a><br>
-                            <li><a href="/lab1/clearcounter">Сбор счетчика</a><br>
-                            <li><a href="/lab1/info">Информация</a><br>
-                            <li><a href="/lab1/created">Что-то создано</a><br>
-                            <li><a href="/lab1/400">Код ответа 400</a><br>
-                            <li><a href="/lab1/401">Код ответа 401</a><br>
-                            <li><a href="/lab1/402">Код ответа 402</a><br>
-                            <li><a href="/lab1/403">Код ответа 403</a><br>
-                            <li><a href="/lab1/404">Код ответа 404</a><br>
-                            <li><a href="/lab1/405">Код ответа 405</a><br>
-                            <li><a href="/lab1/418">Код ответа 418</a><br>
-                            <li><a href="/lab1/obrabot">Обработчик</a><br>
-                        </ol>
-                    </div>
-            <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
-        </body>
+            <head>
+                <title>НГТУ, ФБ, Лабораторная работа 1</title>
+                <link rel="stylesheet" href="''' + css_style + '''">
+            </head>
+            <body>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
+                <div>
+                Flask — фреймворк для создания веб-приложений на языке программирования Python, 
+                использующий набор инструментов Werkzeug, а также шаблонизатор Jinja2. Относится к категории 
+                так называемых микрофреймворков — минималистичных каркасов веб-приложений, сознательно 
+                предоставляющих лишь самые базовые возможности.
+                </div>
+                <div>
+                    <a href="/">Меню лабораторных работ</a>
+                </div>
+                <h2>Список роутов:</h2>
+                <div class="center-block">
+                    <ol>
+                        <li><a href="/">Корень сайта</a></li>
+                        <li><a href="/index">Главная страница</a></li>
+                        <li><a href="/lab1/web">Веб-сервер</a></li>
+                        <li><a href="/lab1/author">Автор</a></li>
+                        <li><a href="/lab1/image">Изображение</a></li>
+                        <li><a href="/lab1/counter">Счетчик</a></li>
+                        <li><a href="/lab1/clearcounter">Сбор счетчика</a></li>
+                        <li><a href="/lab1/info">Информация</a></li>
+                        <li><a href="/lab1/created">Что-то создано</a></li>
+                        <li><a href="/lab1/400">Код ответа 400</a></li>
+                        <li><a href="/lab1/401">Код ответа 401</a></li>
+                        <li><a href="/lab1/402">Код ответа 402</a></li>
+                        <li><a href="/lab1/403">Код ответа 403</a></li>
+                        <li><a href="/lab1/404">Код ответа 404</a></li>
+                        <li><a href="/lab1/405">Код ответа 405</a></li>
+                        <li><a href="/lab1/418">Код ответа 418</a></li>
+                        <li><a href="/lab1/experiment">Обработчик</a></li>
+                    </ol>
+                </div>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
+            </body>
         </html>'''
 
 @app.route("/lab1/web")
