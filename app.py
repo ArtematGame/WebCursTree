@@ -56,7 +56,6 @@ def lab1():
                 <div class="center-block">
                     <ol>
                         <li><a href="/">Корень сайта</a></li>
-                        <li><a href="/index">Главная страница</a></li>
                         <li><a href="/lab1/web">Веб-сервер</a></li>
                         <li><a href="/lab1/author">Автор</a></li>
                         <li><a href="/lab1/image">Изображение</a></li>
