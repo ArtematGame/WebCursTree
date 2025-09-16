@@ -5,7 +5,7 @@ count = 0
 
 @app.errorhandler(404)
 def not_found(err):
-    return "нет такой страницы", 404
+    return redirect("/lab1/404")
 
 @app.route("/")
 @app.route("/index")
@@ -54,7 +54,28 @@ def lab1():
             <div>
                 <a href="/">Меню лабораторных работ</a>
             </div>
-    
+            <h2>Список роутов:</h2>
+                    <div>
+                        <ol>
+                            <li><a href="/">Корень сайта</a><br>
+                            <li><a href="/index">Главная страница</a><br>
+                            <li><a href="/lab1/web">Веб-сервер</a><br>
+                            <li><a href="/lab1/author">Автор</a><br>
+                            <li><a href="/lab1/image">Изображение</a><br>
+                            <li><a href="/lab1/counter">Счетчик</a><br>
+                            <li><a href="/lab1/clearcounter">Сбор счетчика</a><br>
+                            <li><a href="/lab1/info">Информация</a><br>
+                            <li><a href="/lab1/created">Что-то создано</a><br>
+                            <li><a href="/lab1/400">Код ответа 400</a><br>
+                            <li><a href="/lab1/401">Код ответа 401</a><br>
+                            <li><a href="/lab1/402">Код ответа 402</a><br>
+                            <li><a href="/lab1/403">Код ответа 403</a><br>
+                            <li><a href="/lab1/404">Код ответа 404</a><br>
+                            <li><a href="/lab1/405">Код ответа 405</a><br>
+                            <li><a href="/lab1/418">Код ответа 418</a><br>
+                            <li><a href="/lab1/obrabot">Обработчик</a><br>
+                        </ol>
+                    </div>
             <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
         </body>
         </html>'''
