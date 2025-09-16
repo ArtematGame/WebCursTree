@@ -219,12 +219,14 @@ def code403():
 @app.route("/lab1/404")
 def code404():
     css_style = url_for('static', filename='style.css')
+    img_path = url_for("static", filename="404.png")
     return '''<!doctype html>
         <html> 
         <link rel="stylesheet" href="''' + css_style + '''">
            <body>
                 <title>НГТУ, ФБ, Лабораторная работа 1</title>
                 <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
+                <img src="''' + img_path + '''">
                 <div>Код 404 Not Found указывает, что сервер не может найти запрашиваемый ресурс.</div>
                 <a href="/lab1">Меню лабораторной работы 1</a>
                 <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
