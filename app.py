@@ -264,15 +264,11 @@ logs=""
 def not_found(err):
     css = url_for('static', filename='style.css')
     error_img = url_for('static', filename='404.png')
-    
     global logs
     client_ip = request.remote_addr
     time = datetime.datetime.today()
     url = request.url
-    
     logs += '''<div class="log-entry">[<i>''' + str(time) + '''</i>, пользователь <i>''' + client_ip + '''</i>] зашел на адрес: <i>''' + url + '''</i></div>'''
-    
-
     return '''<!doctype html>
         <html> 
         <link rel="stylesheet" href="''' + css + '''">
@@ -284,6 +280,7 @@ def not_found(err):
                 <div style="text-align: center;">
                     <a href="/lab1">Меню лабораторной работы 1</a>
                 </div>
+                <hr>
                 <div>IP-адрес пользователя: ''' + client_ip + '''</div>
                 <div>Дата доступа: ''' + str(time) + '''</div>
                 <div>Лог посещений:</div>
