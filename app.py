@@ -28,9 +28,7 @@ def index():
                 </ul>
             </main>
     
-            <footer>
-                <p>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</p>
-            </footer>
+            <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
         </body>
         </html>'''
 
@@ -47,29 +45,30 @@ def lab1():
                 <link rel="stylesheet" href="''' + css_path + '''">
             </header>
             
-            <main>
-                <div>
-                Flask — фреймворк для создания веб-приложений на языке программирования Python, 
-                использующий набор инструментов Werkzeug, а также шаблонизатор Jinja2. Относится к категории 
-                так называемых микрофреймворков — минималистичных каркасов веб-приложений, сознательно 
-                предоставляющих лишь самые базовые возможности.
-                </div>
+            <div>
+            Flask — фреймворк для создания веб-приложений на языке программирования Python, 
+            использующий набор инструментов Werkzeug, а также шаблонизатор Jinja2. Относится к категории 
+            так называемых микрофреймворков — минималистичных каркасов веб-приложений, сознательно 
+            предоставляющих лишь самые базовые возможности.
+            </div>
+            <div>
                 <a href="/">Меню лабораторных работ</a>
-            </main>
+            </div>
     
-            <footer>
-                <p>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</p>
-            </footer>
+            <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
         </body>
         </html>'''
 
 @app.route("/lab1/web")
 def web():
+    css_style = url_for('static', filename='style.css')
     return '''<!doctype html>
         <html>
+        <link rel="stylesheet" href="''' + css_style + '''">
            <body>
                <h1>web-сервер на flask</h1>
                <a href="/lab1/author">author</a>
+               <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
            </body>
         </html>''', 200, {
             'X-Server': 'sample',
@@ -81,30 +80,36 @@ def author():
     name = "Шельмин Артём Евгеньевич"
     group = "ФБИ-31"
     faculty = "ФБ"
-    
+    css_style = url_for('static', filename='style.css')
     return '''<!doctype html>
         <html>
+        <link rel="stylesheet" href="''' + css_style + '''">
            <body>
-               <p>Студент: ''' + name + '''</p>
-               <p>Группа: ''' + group + '''</p>
-               <p>Факультет: ''' + faculty + '''</p>
-               <a href="/lab1/web">web</a>
-           </body>
+                <title>НГТУ, ФБ, Лабораторная работа 1</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
+                <p>Студент: ''' + name + '''</p>
+                <p>Группа: ''' + group + '''</p>
+                <p>Факультет: ''' + faculty + '''</p>
+                <a href="/lab1/web">web</a>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
+            </body>
         </html>'''
 
 @app.route("/lab1/image")
 def image():
     img_path = url_for("static", filename="cruser.jpg")
     css_path = url_for("static", filename="lab1.css")
-    
     return '''<!doctype html>
         <html>
            <head>
                <link rel="stylesheet" href="''' + css_path + '''">
            </head>
            <body>
-               <h1>Land Cruiser 200</h1>
-               <img src="''' + img_path + '''">
+                <title>НГТУ, ФБ, Лабораторная работа 1</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
+                <h1>Land Cruiser 200</h1>
+                <img src="''' + img_path + '''">
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
            </body>
         </html>'''
 
@@ -115,9 +120,13 @@ def counter():
     time = datetime.datetime.today()
     url = request.url
     client_ip = request.remote_addr
+    css_style = url_for('static', filename='style.css')
     return '''<!doctype html>
         <html>
+        <link rel="stylesheet" href="''' + css_style + '''">
             <body>
+                <title>НГТУ, ФБ, Лабораторная работа 1</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
                 Сколько раз вы сюда заходили: ''' + str(count) + '''
                 <hr>
                 Дата и время: ''' + str(time) + ''' <br>
@@ -125,6 +134,7 @@ def counter():
                 Ваш IP-адрес: ''' + str(client_ip) + ''' <br>
                 <hr>
                 <a href="/lab1/counter/clear">Очистить счетчик</a>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
             </body>
         </html>'''
 
@@ -132,12 +142,17 @@ def counter():
 def clear_counter():
     global count
     count = 0
+    css_style = url_for('static', filename='style.css')
     return '''<!doctype html>
         <html>
+        <link rel="stylesheet" href="''' + css_style + '''">
             <body>
+                <title>НГТУ, ФБ, Лабораторная работа 1</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
                 <h1>Счетчик очищен!</h1>
                 <p>Текущее значение счетчика: ''' + str(count) + '''</p>
                 <a href="/lab1/counter">Вернуться к счетчику</a>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
             </body>
         </html>'''
 
@@ -147,11 +162,16 @@ def info():
 
 @app.route("/lab1/created")
 def created():
+    css_style = url_for('static', filename='style.css')
     return '''<!doctype html>
         <html>
+        <link rel="stylesheet" href="''' + css_style + '''">
             <body>
+                <title>НГТУ, ФБ, Лабораторная работа 1</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
                 <h1>Создано успешно</h1>
                 <div><i>что-то создано...</i></div>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
             </body>
         </html>''', 201
 
@@ -262,3 +282,33 @@ def code418():
                 <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
           </body>
         </html>''', 418
+
+@app.route("/lab1/experiment")
+def experiment():
+    css_style = url_for('static', filename='style.css')
+    a = 10
+    b = 0
+    return '''<!doctype html>
+        <html> 
+        <link rel="stylesheet" href="''' + css_style + '''">
+           <body>
+                <title>НГТУ, ФБ, Лабораторная работа 1</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
+                <div>''' + str(a/b) + '''</div>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
+          </body>
+        </html>'''
+
+@app.errorhandler(500)
+def not_found2(err):
+    css_style = url_for('static', filename='style.css')
+    return '''<!doctype html>
+        <html> 
+        <link rel="stylesheet" href="''' + css_style + '''">
+           <body>
+                <title>НГТУ, ФБ, Лабораторная работа 1</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
+                <div class='error1'>Внутренняя ошибка сервера! Сервер перегружен, либо произошла ошибка.</div>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
+          </body>
+        </html>''', 500
