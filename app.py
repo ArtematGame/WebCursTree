@@ -7,6 +7,33 @@ count = 0
 def not_found(err):
     return "нет такой страницы", 404
 
+@app.route("/")
+@app.route("/index")
+def index():
+    css_path = url_for("static", filename="style.css")
+    return '''<!doctype html>
+        <html>
+        <head>
+            <title>НГТУ, ФБ, Лабораторные работы</title>
+        </head>
+        <body>
+            <header>
+                <h1>НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных</h1>
+                <link rel="stylesheet" href="''' + css_path + '''">
+            </header>
+            
+            <main>
+                <ul>
+                    <li><a href="/lab1">Первая лабораторная</a></li>
+                </ul>
+            </main>
+    
+            <footer>
+                <p>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</p>
+            </footer>
+        </body>
+        </html>'''
+
 @app.route("/lab1/web")
 @app.route("/")
 def web():
