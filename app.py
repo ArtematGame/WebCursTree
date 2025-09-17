@@ -350,3 +350,10 @@ def not_found2(err):
           </body>
         </html>''', 500
 
+@app.route('/lab2/a')
+def a():
+    return 'без слеша'
+
+@app.route('/lab2/a/')
+def a2():
+    return 'со слешем'
