@@ -352,8 +352,8 @@ def not_found2(err):
 
 @app.route('/lab2/a')
 def a():
-    return 'без слеша'
+    return 'без слэша'
 
 @app.route('/lab2/a/')
 def a2():
-    return 'со слешем'
+    return 'со слэшем'
