@@ -1,4 +1,4 @@
-from flask import Flask, url_for, request, redirect, abort
+from flask import Flask, url_for, request, redirect, abort, render_template
 import datetime
 app = Flask(__name__)
 count = 0
@@ -60,7 +60,7 @@ def lab1():
                         <li><a href="/lab1/author">Автор</a></li>
                         <li><a href="/lab1/image">Изображение</a></li>
                         <li><a href="/lab1/counter">Счетчик</a></li>
-                        <li><a href="/lab1/clearcounter">Сбор счетчика</a></li>
+                        <li><a href="/lab1/counter/clear">Сбор счетчика</a></li>
                         <li><a href="/lab1/info">Информация</a></li>
                         <li><a href="/lab1/created">Что-то создано</a></li>
                         <li><a href="/lab1/400">Код ответа 400</a></li>
@@ -381,4 +381,8 @@ def add_flowers(name):
     </body>
 </html>
 '''
+
+@app.route('/lab2/example')
+def example():
+    return render_template('example.html')
 
