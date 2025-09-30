@@ -1,4 +1,4 @@
-from flask import Flask, url_for, request, redirect
+from flask import Flask, url_for, request, redirect, abort, render_template
 import datetime
 app = Flask(__name__)
 count = 0
@@ -60,7 +60,7 @@ def lab1():
                         <li><a href="/lab1/author">Автор</a></li>
                         <li><a href="/lab1/image">Изображение</a></li>
                         <li><a href="/lab1/counter">Счетчик</a></li>
-                        <li><a href="/lab1/clearcounter">Сбор счетчика</a></li>
+                        <li><a href="/lab1/counter/clear">Сбор счетчика</a></li>
                         <li><a href="/lab1/info">Информация</a></li>
                         <li><a href="/lab1/created">Что-то создано</a></li>
                         <li><a href="/lab1/400">Код ответа 400</a></li>
@@ -348,4 +348,40 @@ def not_found2(err):
                 <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
           </body>
         </html>''', 500
+
+@app.route('/lab2/a')
+def a():
+    return 'без слэша'
+
+@app.route('/lab2/a/')
+def a2():
+    return 'со слэшем'
+
+flower_list = ['роза', 'тюльпан', 'незабудка', 'ромашка']
+
+@app.route('/lab2/flowers/<int:flower_id>')
+def flowers(flower_id):
+    if flower_id >= len(flower_list):
+        abort(404)
+    else:
+        return "цветок: " + flower_list[flower_id]
+
+@app.route('/lab2/flowers/<name>')
+def add_flowers(name):
+    flower_list.append(name)
+    return f'''
+<!doctype html>
+<html>
+    <body>
+    <h1> Добавлен новый цветок</h1>
+    <p>Название нового цветка: {name} </p>
+    <p>Всего цветов: {len(flower_list)}</p>
+    <p>Полный список: {flower_list}</p>
+    </body>
+</html>
+'''
+
+@app.route('/lab2/example')
+def example():
+    return render_template('example.html')
 
