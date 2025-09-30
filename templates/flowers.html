@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 2{% endblock %}
+
+{% block main %}
+    <h2>Список всех цветов</h2>
+    
+    <div class="flowers-info">
+        <p>Всего цветов: {{ flowers|length }}</p>
+    </div>
+
+    {% if flowers %}
+        <ul class="flowers-list">
+            {% for flower in flowers %}
+            <li>
+                {{ flower }} 
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Список цветов пуст</p>
+    {% endif %}
+
+    <div class="flowers-actions">
+        <h3>Действия:</h3>
+        <p><a href="/lab2/clear_flowers">Очистить список цветов</a></p>
+    </div>
+
+    <div class="navigation">
+        <p><a href="/lab2/">Вернуться к списку страниц</a></p>
+    </div>
+{% endblock %}
