@@ -1,13 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Шельмин Артём. {% block lab %}{% endblock %}</title>
+    <title>
+        {% if name %}{{ name }}. {% else %}Анонимус. {% endif %}
+        {% block lab %}{% endblock %}
+    </title>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='favicon-32x32.png') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon-48x48.png') }}">
 </head>
 <body>
     <header>
+        <a href="/" style="color: white; text-decoration: none; float: left;">Главная</a>
         WEB-программирование, часть 2. {{ self.lab() }}
     </header>
 
@@ -16,7 +23,11 @@
     </main>
 
     <footer>
-        &copy; Шельмин Артём, ФБИ-31, 3 Курс, 2025
+        &copy; 
+        {% if name %}{{ name }}{% else %}Анонимус{% endif %}, 
+        {% if group %}{{ group }}{% else %}Неизвестная группа{% endif %}, 
+        {% if course %}{{ course }} курс{% else %}Неизвестный курс{% endif %}, 
+        2025
     </footer>
 </body>
 </html>
