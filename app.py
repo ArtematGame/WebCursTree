@@ -199,7 +199,6 @@ def created():
             </body>
         </html>''', 201
 
-
 @app.route("/lab1/400")
 def code400():
     css_style = url_for('static', filename='style.css')
