@@ -508,3 +508,30 @@ def books():
     ]
     
     return render_template('books.html', books=books_list)
+
+@app.route('/lab2/fruits')
+def fruits_with_images():
+    fruits = [
+        {'name': 'Яблоко', 'description': 'Сочный сладкий фрукт', 'image': 'apple.jpg'},
+        {'name': 'Банан', 'description': 'Энергетический фрукт желтого цвета', 'image': 'banana.jpg'},
+        {'name': 'Апельсин', 'description': 'Цитрусовый фрукт богатый витамином C', 'image': 'orange.jpg'},
+        {'name': 'Клубника', 'description': 'Ароматная красная ягода', 'image': 'strawberry.jpg'},
+        {'name': 'Виноград', 'description': 'Сладкие ягоды растущие гроздьями', 'image': 'grape.jpeg'},
+        {'name': 'Ананас', 'description': 'Тропический фрукт с колючей кожурой', 'image': 'pineapple.jpg'},
+        {'name': 'Манго', 'description': 'Сладкий тропический фрукт', 'image': 'mango.jpg'},
+        {'name': 'Киви', 'description': 'Фрукт с зеленой мякотью и мелкими семенами', 'image': 'kiwi.jpg'},
+        {'name': 'Груша', 'description': 'Сладкий фрукт грушевидной формы', 'image': 'pear.jpg'},
+        {'name': 'Персик', 'description': 'Ароматный фрукт с бархатной кожурой', 'image': 'peach.jpg'},
+        {'name': 'Слива', 'description': 'Небольшой фрукт фиолетового цвета', 'image': 'plum.jpeg'},
+        {'name': 'Вишня', 'description': 'Маленькие красные ягоды', 'image': 'cherry.jpg'},
+        {'name': 'Черешня', 'description': 'Сладкие крупные ягоды', 'image': 'sweet_cherry.png'},
+        {'name': 'Лимон', 'description': 'Кислый цитрусовый фрукт', 'image': 'lemon.jpg'},
+        {'name': 'Грейпфрут', 'description': 'Крупный горьковатый цитрус', 'image': 'grapefruit.jpg'},
+        {'name': 'Арбуз', 'description': 'Большая сладкая ягода', 'image': 'watermelon.jpg'},
+        {'name': 'Дыня', 'description': 'Сладкий ароматный фрукт', 'image': 'melon.jpg'},
+        {'name': 'Гранат', 'description': 'Фрукт с множеством сочных зёрен', 'image': 'pomegranate.jpg'},
+        {'name': 'Инжир', 'description': 'Сладкий фрукт с мелкими семенами', 'image': 'fig.jpg'},
+        {'name': 'Хурма', 'description': 'Оранжевый сладкий фрукт', 'image': 'persimmon.jpg'}
+    ]
+    
+    return render_template('fruits.html', fruits=fruits)
