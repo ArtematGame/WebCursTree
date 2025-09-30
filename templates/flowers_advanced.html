@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 2{% endblock %}
+
+{% block main %}
+    <h1>Список цветов с ценами</h1>
+
+    <div>
+        {% for flower in flowers %}
+        <div>
+            {{ loop.index }}. {{ flower.name }} - {{ flower.price }} руб 
+            <a href="/lab2/del_flower/{{ loop.index0 }}">удалить</a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div>
+        <h3>Добавить цветок:</h3>
+        <form method="post">
+            <input type="text" name="flower_name" placeholder="Название цветка">
+            <input type="number" name="flower_price" placeholder="Цена">
+            <button type="submit">Добавить</button>
+        </form>
+    </div>
+
+    <div>
+        <a href="/lab2/del_all_flowers" style="color: red;">Удалить все цветы</a>
+    </div>
+
+    <div>
+        <a href="/lab2/">Назад к списку страниц</a>
+    </div>
+{% endblock %}
