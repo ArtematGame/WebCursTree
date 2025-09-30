@@ -354,11 +354,39 @@ def not_found2(err):
 
 @app.route('/lab2/a')
 def a():
-    return 'без слэша'
+    css_style = url_for('static', filename='main.css')
+    return f'''
+        <!doctype html>
+        <html>
+        <link rel="stylesheet" href="{css_style}">
+            <body>
+                <title>НГТУ, ФБ, Лабораторная работа 2</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
+                <h2>Без слэша</h2>
+                <br>
+                <a href="/lab2/">Список заданий</a>
+                <footer>&copy; Шельмин Артём, ФБИ-31, 3 курс, 2025</footer>
+            </body>
+        </html>
+        '''
 
 @app.route('/lab2/a/')
 def a2():
-    return 'со слэшем'
+    css_style = url_for('static', filename='main.css')
+    return f'''
+        <!doctype html>
+        <html>
+        <link rel="stylesheet" href="{css_style}">
+            <body>
+                <title>НГТУ, ФБ, Лабораторная работа 2</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
+                <h2>Со слэшем</h2>
+                <br>
+                <a href="/lab2/">Список заданий</a>
+                <footer>&copy; Шельмин Артём, ФБИ-31, 3 курс, 2025</footer>
+            </body>
+        </html>
+        '''
 
 flower_list = ['роза', 'тюльпан', 'незабудка', 'ромашка']
 
@@ -377,7 +405,7 @@ def flowers(flower_id):
                 цветок:  ''' + flower_list[flower_id] + '''
                 <br>
                 <a href="/lab2/flowers/">Список цветов</a>
-                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
+                <footer>&copy; Шельмин Артём, ФБИ-31, 3 курс, 2024</footer>
             </body>
         </html>'''
 
@@ -398,7 +426,7 @@ def add_flowers(name):
                 <p>Полный список: {flower_list}</p>
                 <br>
                 <a href="/lab2/flowers/">Список цветов</a>
-                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
+                <footer>&copy; Шельмин Артём, ФБИ-31, 3 курс, 2024</footer>
             </body>
         </html>
         '''
@@ -424,7 +452,10 @@ def add_flower_empty():
 
 @app.route('/lab2/flowers/')
 def all_flowers():
-    return render_template('flowers.html', flowers=flower_list)
+    name, lab_number, group, course = 'Шельмин Артём', '2', 'ФБИ-31', '3'
+    return render_template('flowers.html', flowers=flower_list, 
+                          name=name, lab_number=lab_number, group=group, 
+                          course=course)
 
 @app.route('/lab2/clear_flowers')
 def clear_flowers():
@@ -448,12 +479,18 @@ def example():
 
 @app.route('/lab2/')
 def lab2():
-    return render_template('lab2.html')
+    name, lab_number, group, course = 'Шельмин Артём', '2', 'ФБИ-31', '3'
+    return render_template('lab2.html', 
+                          name=name, lab_number=lab_number, group=group, 
+                          course=course)
 
 @app.route('/lab2/filters')
 def filters():
+    name, lab_number, group, course = 'Шельмин Артём', '2', 'ФБИ-31', '3'
     phrase = "0 <b>сколько</b> <u>нам</u> <i>открытий</i> чудных..."
-    return render_template('filter.html', phrase = phrase)
+    return render_template('filter.html', phrase = phrase, 
+                          name=name, lab_number=lab_number, group=group, 
+                          course=course)
 
 @app.route('/lab2/calc/')
 def calc_default():
@@ -489,14 +526,17 @@ def calc(a, b):
                 Деление: {dil}
                 <br>
                 Возведение в степень: {ste}
+                <br>
+                <a href="/lab2/">Список заданий</a>
                 </div>
-                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
+                <footer>&copy; Шельмин Артём, ФБИ-31, 3 курс, 2025</footer>
             </body>
         </html>
         '''
 
 @app.route('/lab2/books')
 def books():
+    name, lab_number, group, course = 'Шельмин Артём', '2', 'ФБИ-31', '3'
     books_list = [
         {'author': 'Фёдор Достоевский', 'title': 'Преступление и наказание', 'genre': 'Роман', 'pages': 671},
         {'author': 'Лев Толстой', 'title': 'Война и мир', 'genre': 'Роман-эпопея', 'pages': 1225},
@@ -510,10 +550,13 @@ def books():
         {'author': 'Николай Лесков', 'title': 'Левша', 'genre': 'Повесть', 'pages': 128}
     ]
     
-    return render_template('books.html', books=books_list)
+    return render_template('books.html', books=books_list, 
+                          name=name, lab_number=lab_number, group=group, 
+                          course=course)
 
 @app.route('/lab2/fruits')
 def fruits_with_images():
+    name, lab_number, group, course = 'Шельмин Артём', '2', 'ФБИ-31', '3'
     fruits = [
         {'name': 'Яблоко', 'description': 'Сочный сладкий фрукт', 'image': 'apple.jpg'},
         {'name': 'Банан', 'description': 'Энергетический фрукт желтого цвета', 'image': 'banana.jpg'},
@@ -537,4 +580,6 @@ def fruits_with_images():
         {'name': 'Хурма', 'description': 'Оранжевый сладкий фрукт', 'image': 'persimmon.jpg'}
     ]
     
-    return render_template('fruits.html', fruits=fruits)
+    return render_template('fruits.html', fruits=fruits, 
+                          name=name, lab_number=lab_number, group=group, 
+                          course=course)
