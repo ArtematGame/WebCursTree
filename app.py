@@ -603,7 +603,6 @@ def flowers_advanced():
 
 @app.route('/lab2/del_flower/<int:flower_id>')
 def del_flower(flower_id):
-    """Удаление цветка по номеру"""
     if flower_id >= len(flowers_with_prices):
         abort(404)
     flowers_with_prices.pop(flower_id)
