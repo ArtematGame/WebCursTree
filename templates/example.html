@@ -22,6 +22,12 @@
             <li>8452 / 793 = {{ "%.2f" % (8452 / 793) }}</li>
             <li>45<sup>8</sup> = {{ 45**8 }}</li>
         </ul>
+        <h2>Список фруктов:</h2>
+        <ul>
+            {% for f in fruits %}
+            <li>{{ loop.index }} - {{ f.name }}: {{ f.price }} &#8381;</li>
+            {% endfor %}
+        </ul>
     </main>
 
     <footer>
