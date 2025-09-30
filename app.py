@@ -583,3 +583,33 @@ def fruits_with_images():
     return render_template('fruits.html', fruits=fruits, 
                           name=name, lab_number=lab_number, group=group, 
                           course=course)
+
+flowers_with_prices = [
+    {'name': 'роза', 'price': 300},
+    {'name': 'тюльпан', 'price': 310},
+    {'name': 'незабудка', 'price': 320},
+    {'name': 'ромашка', 'price': 330}
+]
+
+@app.route('/lab2/flowers_advanced/', methods=['GET', 'POST'])
+def flowers_advanced():
+    name, lab_number, group, course = 'Шельмин Артём', '2', 'ФБИ-31', '3'
+
+    if request.method == 'POST':
+        flower_name = request.form.get('flower_name')
+        flower_price = request.form.get('flower_price')
+        flowers_with_prices.append({'name': flower_name, 'price': int(flower_price)})
+    return render_template('flowers_advanced.html', flowers=flowers_with_prices, name=name, lab_number=lab_number, group=group, course=course)
+
+@app.route('/lab2/del_flower/<int:flower_id>')
+def del_flower(flower_id):
+    """Удаление цветка по номеру"""
+    if flower_id >= len(flowers_with_prices):
+        abort(404)
+    flowers_with_prices.pop(flower_id)
+    return redirect('/lab2/flowers_advanced/')
+
+@app.route('/lab2/del_all_flowers')
+def del_all_flowers():
+    flowers_with_prices.clear()
+    return redirect('/lab2/flowers_advanced/')
