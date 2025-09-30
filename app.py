@@ -369,9 +369,12 @@ def flowers(flower_id):
         <html>
         <link rel="stylesheet" href="''' + css_style + '''">
             <body>
+                <title>НГТУ, ФБ, Лабораторная работа 2</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
                 цветок:  ''' + flower_list[flower_id] + '''
                 <br>
                 <a href="/lab2/flowers/">Список цветов</a>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
             </body>
         </html>'''
 
@@ -384,10 +387,15 @@ def add_flowers(name):
         <html>
         <link rel="stylesheet" href="{css_style}">
             <body>
+                <title>НГТУ, ФБ, Лабораторная работа 2</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
                 <h1> Добавлен новый цветок</h1>
                 <p>Название нового цветка: {name} </p>
                 <p>Всего цветов: {len(flower_list)}</p>
                 <p>Полный список: {flower_list}</p>
+                <br>
+                <a href="/lab2/flowers/">Список цветов</a>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
             </body>
         </html>
         '''
@@ -400,8 +408,13 @@ def add_flower_empty():
         <html>
         <link rel="stylesheet" href="{css_style}">
             <body>
+                <title>НГТУ, ФБ, Лабораторная работа 2</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
                 <h2>Ошибка 400</h2>
                 <p>Вы не задали имя цветка</p>
+                <br>
+                <a href="/lab2/flowers/">Список цветов</a>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
             </body>
         </html>
         ''', 400
@@ -439,3 +452,42 @@ def filters():
     phrase = "0 <b>сколько</b> <u>нам</u> <i>открытий</i> чудных..."
     return render_template('filter.html', phrase = phrase)
 
+@app.route('/lab2/calc/')
+def calc_default():
+    return redirect('/lab2/calc/1/1')
+
+@app.route('/lab2/calc/<int:a>')
+def calc_single(a):
+    return redirect(f'/lab2/calc/{a}/1')
+
+@app.route('/lab2/calc/<int:a>/<int:b>')
+def calc(a, b):
+    css_style = url_for('static', filename='main.css')
+    sum = a+b
+    min = a-b
+    umn = a*b
+    dil = a/b
+    ste = a**b
+    return f'''
+        <!doctype html>
+        <html>
+        <link rel="stylesheet" href="{css_style}">
+            <body>
+                <title>НГТУ, ФБ, Лабораторная работа 2</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
+                <h2>Калькулятор</h2>
+                <div>
+                Сложение: {sum}
+                <br>
+                Вычитание: {min}
+                <br>
+                Умножение: {umn}
+                <br>
+                Деление: {dil}
+                <br>
+                Возведение в степень: {ste}
+                </div>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
+            </body>
+        </html>
+        '''
