@@ -1,15 +1,24 @@
 {% extends "base.html" %}
 
-{# номер лабораторной работы: #}
 {% block lab %}Лабораторная работа 2{% endblock %}
 
-{# основной контент: #}
 {% block main %}
-    <h2>Шаблоны</h2>
+    <h1>Шаблоны в Flask</h1>
     <div>Тема лабораторной - шаблоны. Список сделанных страниц:</div>
-    <ol>
-        <li>
-            <a href="/lab2/example">Пример страницы</a>
-        </li>
-    </ol>
+    
+    <div class="center-block">
+        <ol>
+            <li><a href="/lab2/example">Пример страницы с вычислениями</a></li>
+            <li><a href="/lab2/a">Без слэша в конце</a></li>
+            <li><a href="/lab2/a/">Со слэшем в конце</a></li>
+            <li><a href="/lab2/flowers/">Выбор цветка</a></li>
+            <li><a href="/lab2/add_flower/">Добавить цветок</a></li>
+            <li><a href="/lab2/flowers/">Все цветы</a></li>
+            <li><a href="/lab2/clear_flowers">Очистить все цветы</a></li>
+            <li><a href="/lab2/filters">Фильтры</a></li>
+            <li><a href="/lab2/calc/">Калькулятор</a></li>
+            <li><a href="/lab2/books">Список книг</a></li>
+            <li><a href="/lab2/fruits">Каталог фруктов</a></li>
+        </ol>
+    </div>
 {% endblock %}
