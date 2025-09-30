@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 2{% endblock %}
+
+{% block main %}
+    <h1>Список книг</h1>
+
+    <ul>
+        {% for book in books %}
+        <li>
+            <strong>{{ book.author }}</strong>: "{{ book.title }}" 
+            ({{ book.genre }}, {{ book.pages }} стр.)
+        </li>
+        {% endfor %}
+    </ul>
+
+    <a href="/lab2/">Назад к списку страниц</a>
+{% endblock %}
