@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 2{% endblock %}
+
+{% block main %}
+    <h1>Каталог фруктов и ягод</h1>
+
+    {% for fruit in fruits %}
+    <div>
+        <img src="{{ url_for('static', filename=fruit.image) }}" alt="{{ fruit.name }}">
+        <h2>{{ fruit.name }}</h2>
+        <p>{{ fruit.description }}</p>
+    </div>
+    {% endfor %}
+
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="/lab2/">Назад к списку страниц</a>
+    </div>
+{% endblock %}
