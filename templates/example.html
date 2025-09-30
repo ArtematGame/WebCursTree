@@ -3,19 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Шельмин Артём. Лабораторная работа 2</title>
+    <title>Шельмин Артём. Лабораторная работа {{ lab_number }}</title>
 </head>
 <body>
     <header>
-        WEB-программирование, часть 2. Лабораторная работа 2
+        WEB-программирование, часть 2. Лабораторная работа {{ lab_number }}
     </header>
 
     <main>
-        Основной контент
+        <h2>Результаты вычислений:</h2>
+        <ul>
+            <li>11 × 28 = {{ 11 * 28 }}</li>
+            <li>3258 - 759 = {{ 3258 - 759 }}</li>
+            <li>8452 / 793 = {{ "%.2f"|format(8452 / 793) }}</li>
+            <li>45<sup>8</sup> = {{ 45**8 }}</li>
+        </ul>
     </main>
 
     <footer>
-        &copy; Шельмин Артём, ФБИ-31, 3 курс, 2025
+        &copy; {{ name }}, {{ group }}, {{ course }} курс, 2025
     </footer>
 </body>
 </html>
