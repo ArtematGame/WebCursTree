@@ -345,8 +345,8 @@ def not_found2(err):
         <html> 
         <link rel="stylesheet" href="''' + css_style + '''">
            <body>
-                <title>НГТУ, ФБ, Лабораторная работа 1</title>
-                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
+                <title>НГТУ, ФБ, Лабораторная работа 2</title>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 2</header>
                 <div class='error1'>Внутренняя ошибка сервера! Сервер перегружен, либо произошла ошибка.</div>
                 <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
           </body>
@@ -361,10 +361,12 @@ def a():
         <link rel="stylesheet" href="{css_style}">
             <body>
                 <title>НГТУ, ФБ, Лабораторная работа 2</title>
-                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
-                <h2>Без слэша</h2>
-                <br>
-                <a href="/lab2/">Список заданий</a>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 2</header>
+                <div>
+                    <h2>Без слэша</h2>
+                    <br>
+                    <a href="/lab2/">Список заданий</a>
+                </div>
                 <footer>&copy; Шельмин Артём, ФБИ-31, 3 курс, 2025</footer>
             </body>
         </html>
@@ -379,10 +381,12 @@ def a2():
         <link rel="stylesheet" href="{css_style}">
             <body>
                 <title>НГТУ, ФБ, Лабораторная работа 2</title>
-                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
-                <h2>Со слэшем</h2>
-                <br>
-                <a href="/lab2/">Список заданий</a>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 2</header>
+                <div>
+                    <h2>Со слэшем</h2>
+                    <br>
+                    <a href="/lab2/">Список заданий</a>
+                </div>
                 <footer>&copy; Шельмин Артём, ФБИ-31, 3 курс, 2025</footer>
             </body>
         </html>
@@ -401,10 +405,12 @@ def flowers(flower_id):
         <link rel="stylesheet" href="''' + css_style + '''">
             <body>
                 <title>НГТУ, ФБ, Лабораторная работа 2</title>
-                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
-                цветок:  ''' + flower_list[flower_id] + '''
-                <br>
-                <a href="/lab2/flowers/">Список цветов</a>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 2</header>
+                <div>
+                    цветок:  ''' + flower_list[flower_id] + '''
+                    <br>
+                    <a href="/lab2/flowers/">Список цветов</a>
+                </div>
                 <footer>&copy; Шельмин Артём, ФБИ-31, 3 курс, 2024</footer>
             </body>
         </html>'''
@@ -419,13 +425,15 @@ def add_flowers(name):
         <link rel="stylesheet" href="{css_style}">
             <body>
                 <title>НГТУ, ФБ, Лабораторная работа 2</title>
-                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 2</header>
                 <h1> Добавлен новый цветок</h1>
-                <p>Название нового цветка: {name} </p>
-                <p>Всего цветов: {len(flower_list)}</p>
-                <p>Полный список: {flower_list}</p>
-                <br>
-                <a href="/lab2/flowers/">Список цветов</a>
+                <div>
+                    <p>Название нового цветка: {name} </p>
+                    <p>Всего цветов: {len(flower_list)}</p>
+                    <p>Полный список: {flower_list}</p>
+                    <br>
+                    <a href="/lab2/flowers/">Список цветов</a>
+                </div>
                 <footer>&copy; Шельмин Артём, ФБИ-31, 3 курс, 2024</footer>
             </body>
         </html>
@@ -440,11 +448,13 @@ def add_flower_empty():
         <link rel="stylesheet" href="{css_style}">
             <body>
                 <title>НГТУ, ФБ, Лабораторная работа 2</title>
-                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
-                <h2>Ошибка 400</h2>
-                <p>Вы не задали имя цветка</p>
-                <br>
-                <a href="/lab2/flowers/">Список цветов</a>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 2</header>
+                <div>
+                    <h2>Ошибка 400</h2>
+                    <p>Вы не задали имя цветка</p>
+                    <br>
+                    <a href="/lab2/flowers/">Список цветов</a>
+                </div>
                 <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
             </body>
         </html>
@@ -514,7 +524,7 @@ def calc(a, b):
         <link rel="stylesheet" href="{css_style}">
             <body>
                 <title>НГТУ, ФБ, Лабораторная работа 2</title>
-                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 1</header>
+                <header>НГТУ, ФБ, WEB-программирование, Лабораторная 2</header>
                 <h2>Калькулятор</h2>
                 <div>
                 Сложение: {sum}
