@@ -26,4 +26,4 @@ def del_cookie():
 @lab3.route('/lab3/form1')
 def form1():
     user = request.args.get('user')
-    return render_tamplate('lab3/form1.html', user=user)
+    return render_template('lab3/form1.html', user=user)
