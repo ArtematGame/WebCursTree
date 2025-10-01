@@ -71,7 +71,7 @@ def flowers(flower_id):
 @lab2.route('/lab2/add_flower/<name>')
 def add_flowers(name):
     css_style = url_for('static', filename='main.css')
-    flower_list.lab2end(name)
+    flower_list.append(name)
     return f'''
         <!doctype html>
         <html>
@@ -273,7 +273,7 @@ def flowers_advanced():
     if request.method == 'POST':
         flower_name = request.form.get('flower_name')
         flower_price = request.form.get('flower_price')
-        flowers_with_prices.lab2end({'name': flower_name, 'price': int(flower_price)})
+        flowers_with_prices.append({'name': flower_name, 'price': int(flower_price)})
     return render_template('flowers_advanced.html', flowers=flowers_with_prices, name=name, lab_number=lab_number, group=group, course=course)
 
 
