@@ -178,30 +178,23 @@ def products_search():
     
     min_price = request.args.get('min_price') or request.cookies.get('min_price', '')
     max_price = request.args.get('max_price') or request.cookies.get('max_price', '')
-    
+
     if request.args.get('min_price') is not None:
         resp = make_response(redirect('/lab3/products'))
-        if min_price: resp.set_cookie('min_price', min_price)
-        if max_price: resp.set_cookie('max_price', max_price)
+        resp.set_cookie('min_price', min_price)
+        resp.set_cookie('max_price', max_price)
         return resp
 
-    filtered_products = []
+    filtered_products = products
     
     if min_price or max_price:
-        try:
-            min_val = float(min_price) if min_price else min_all
-            max_val = float(max_price) if max_price else max_all
-            
-            if min_val > max_val:
-                min_val, max_val = max_val, min_val
-            
-            for product in products:
-                if min_val <= product['price'] <= max_val:
-                    filtered_products.append(product)
-        except:
-            filtered_products = products
-    else:
-        filtered_products = products
+        min_val = float(min_price) if min_price else min_all
+        max_val = float(max_price) if max_price else max_all
+        
+        if min_val > max_val:
+            min_val, max_val = max_val, min_val
+        
+        filtered_products = [p for p in products if min_val <= p['price'] <= max_val]
     
     return render_template('lab3/products.html', 
                          products=filtered_products,
@@ -209,5 +202,4 @@ def products_search():
                          max_price=max_price,
                          min_all=min_all,
                          max_all=max_all)
-
 
