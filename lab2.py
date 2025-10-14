@@ -289,3 +289,4 @@ def del_flower(flower_id):
 def del_all_flowers():
     flowers_with_prices.clear()
     return redirect('/lab2/flowers_advanced/')
+ 

@@ -287,4 +287,3 @@ def experiment():
                 <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
           </body>
         </html>'''
-

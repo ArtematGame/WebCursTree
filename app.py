@@ -87,3 +87,4 @@ def not_found2(err):
                 <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2025</footer>
           </body>
         </html>''', 500
+ 
