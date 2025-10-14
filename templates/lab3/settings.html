@@ -3,15 +3,25 @@
 {% block lab %}Лабораторная работа 3{% endblock %}
 
 {% block main %}
-
     <h1>Cookies</h1>
-    <form>
+    <form method="get">
         <div>
-            <label class="label" for="color">Выберите цвет текста:</label>
+            <label for="color">Выберите цвет текста:</label>
             <input type="color" id="color" name="color" value="{{ color or '' }}">
         </div>
+
         <div>
-            <button type="submit">ОК</button>
+            <label for="bg_color">Выберите цвет фона:</label>
+            <input type="color" id="bg_color" name="bg_color" value="{{ bg_color or '' }}">
+        </div>
+
+        <div>
+            <label for="font_size">Выберите размер шрифта:</label>
+            <input type="text" id="font_size" name="font_size" value="{{ font_size or '16px' }}" placeholder="например: 20px">
+        </div>
+        
+        <div>
+            <button type="submit">OK</button>
         </div>
     </form>
 {% endblock %}
