@@ -8,6 +8,9 @@
 
     <h1>Привет, {{ user }}!</h1>
     <h2>Добро пожаловать на наш сайт!</h2>
+
+    <div>Ваш возраст: {{ age }}</div>
+    <div>Ваш пол: {{ sex }}</div>
     <div>
         <a href="/lab3/form1">Заново</a>
     </div>
@@ -29,10 +32,10 @@
 
         <label>Ваш пол:</label>
         <div>
-            <section>
+            <select name="sex">
                 <option value="male">Мужчина</option>
                 <option value="female">Женщина</option>
-            </section>
+            </select>
         </div>
 
         <div>
