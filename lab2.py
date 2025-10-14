@@ -3,7 +3,7 @@ lab2 = Blueprint('lab2', __name__)
 
 @lab2.route('/lab2/a')
 def a():
-    css_style = url_for('static', filename='main.css')
+    css_style = url_for('static', filename='lab1/main.css')
     return f'''
         <!doctype html>
         <html>
@@ -14,7 +14,7 @@ def a():
                 <div>
                     <h2>Без слэша</h2>
                     <br>
-                    <a href="/lab2/">Список заданий</a>
+                    <a href="/lab2">Список заданий</a>
                 </div>
                 <footer>&copy; Шельмин Артём, ФБИ-31, 3 курс, 2025</footer>
             </body>
@@ -24,7 +24,7 @@ def a():
 
 @lab2.route('/lab2/a/')
 def a2():
-    css_style = url_for('static', filename='main.css')
+    css_style = url_for('static', filename='lab1/main.css')
     return f'''
         <!doctype html>
         <html>
@@ -35,7 +35,7 @@ def a2():
                 <div>
                     <h2>Со слэшем</h2>
                     <br>
-                    <a href="/lab2/">Список заданий</a>
+                    <a href="/lab2">Список заданий</a>
                 </div>
                 <footer>&copy; Шельмин Артём, ФБИ-31, 3 курс, 2025</footer>
             </body>
@@ -48,7 +48,7 @@ flower_list = ['роза', 'тюльпан', 'незабудка', 'ромашк
 
 @lab2.route('/lab2/flowers/<int:flower_id>')
 def flowers(flower_id):
-    css_style = url_for('static', filename='main.css')
+    css_style = url_for('static', filename='lab1/main.css')
     if flower_id >= len(flower_list):
         abort(404)
     else:
@@ -70,7 +70,7 @@ def flowers(flower_id):
 
 @lab2.route('/lab2/add_flower/<name>')
 def add_flowers(name):
-    css_style = url_for('static', filename='main.css')
+    css_style = url_for('static', filename='lab1/main.css')
     flower_list.append(name)
     return f'''
         <!doctype html>
@@ -95,7 +95,7 @@ def add_flowers(name):
 
 @lab2.route('/lab2/add_flower/')
 def add_flower_empty():
-    css_style = url_for('static', filename='main.css')
+    css_style = url_for('static', filename='lab1/main.css')
     return f'''
         <!doctype html>
         <html>
@@ -118,7 +118,7 @@ def add_flower_empty():
 @lab2.route('/lab2/flowers/')
 def all_flowers():
     name, lab_number, group, course = 'Шельмин Артём', '2', 'ФБИ-31', '3'
-    return render_template('flowers.html', flowers=flower_list, 
+    return render_template('lab2/flowers.html', flowers=flower_list, 
                           name=name, lab_number=lab_number, group=group, 
                           course=course)
 
@@ -140,7 +140,7 @@ def example():
         {'name': 'мандарины', 'price': 95},
         {'name': 'манго', 'price': 321}
     ]
-    return render_template('example.html', 
+    return render_template('lab2/example.html', 
                           name=name, lab_number=lab_number, group=group, 
                           course=course, fruits=fruits)
 
@@ -148,7 +148,7 @@ def example():
 @lab2.route('/lab2/')
 def lab():
     name, lab_number, group, course = 'Шельмин Артём', '2', 'ФБИ-31', '3'
-    return render_template('lab2.html', 
+    return render_template('lab2/lab2.html', 
                           name=name, lab_number=lab_number, group=group, 
                           course=course)
 
@@ -157,7 +157,7 @@ def lab():
 def filters():
     name, lab_number, group, course = 'Шельмин Артём', '2', 'ФБИ-31', '3'
     phrase = "0 <b>сколько</b> <u>нам</u> <i>открытий</i> чудных..."
-    return render_template('filter.html', phrase = phrase, 
+    return render_template('lab2/filter.html', phrase = phrase, 
                           name=name, lab_number=lab_number, group=group, 
                           course=course)
 
@@ -174,7 +174,7 @@ def calc_single(a):
 
 @lab2.route('/lab2/calc/<int:a>/<int:b>')
 def calc(a, b):
-    css_style = url_for('static', filename='main.css')
+    css_style = url_for('static', filename='lab1/main.css')
     sum = a+b
     min = a-b
     umn = a*b
@@ -223,7 +223,7 @@ def books():
         {'author': 'Николай Лесков', 'title': 'Левша', 'genre': 'Повесть', 'pages': 128}
     ]
     
-    return render_template('books.html', books=books_list, 
+    return render_template('lab2/books.html', books=books_list, 
                           name=name, lab_number=lab_number, group=group, 
                           course=course)
 
@@ -254,7 +254,7 @@ def fruits_with_images():
         {'name': 'Хурма', 'description': 'Оранжевый сладкий фрукт', 'image': 'persimmon.jpg'}
     ]
     
-    return render_template('fruits.html', fruits=fruits, 
+    return render_template('lab2/fruits.html', fruits=fruits, 
                           name=name, lab_number=lab_number, group=group, 
                           course=course)
 
@@ -274,7 +274,7 @@ def flowers_advanced():
         flower_name = request.form.get('flower_name')
         flower_price = request.form.get('flower_price')
         flowers_with_prices.append({'name': flower_name, 'price': int(flower_price)})
-    return render_template('flowers_advanced.html', flowers=flowers_with_prices, name=name, lab_number=lab_number, group=group, course=course)
+    return render_template('lab2/flowers_advanced.html', flowers=flowers_with_prices, name=name, lab_number=lab_number, group=group, course=course)
 
 
 @lab2.route('/lab2/del_flower/<int:flower_id>')

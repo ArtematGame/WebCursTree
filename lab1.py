@@ -1,11 +1,12 @@
 from flask import Blueprint, url_for, request, redirect, abort
+import datetime
 lab1 = Blueprint('lab1', __name__)
 
 count = 0
 
 @lab1.route("/lab1/")
 def lab():
-    css_style = url_for("static", filename="style.css")
+    css_style = url_for("static", filename="lab1/style.css")
     return '''<!doctype html>
         <html>
             <head>
@@ -50,7 +51,7 @@ def lab():
 
 @lab1.route("/lab1/web")
 def web():
-    css_style = url_for('static', filename='style.css')
+    css_style = url_for("static", filename="lab1/style.css")
     return '''<!doctype html>
         <html>
         <link rel="stylesheet" href="''' + css_style + '''">
@@ -69,7 +70,7 @@ def author():
     name = "Шельмин Артём Евгеньевич"
     group = "ФБИ-31"
     faculty = "ФБ"
-    css_style = url_for('static', filename='style.css')
+    css_style = url_for("static", filename="lab1/style.css")
     return '''<!doctype html>
         <html>
         <link rel="stylesheet" href="''' + css_style + '''">
@@ -86,8 +87,8 @@ def author():
 
 @lab1.route("/lab1/image")
 def image():
-    img_path = url_for("static", filename="cruser.jpg")
-    css_path = url_for("static", filename="lab1.css")
+    img_path = url_for("static", filename="lab1/cruser.jpg")
+    css_path = url_for("static", filename="lab1/lab1.css")
     return '''<!doctype html>
         <html>
            <head>
@@ -114,7 +115,7 @@ def counter():
     time = datetime.datetime.today()
     url = request.url
     client_ip = request.remote_addr
-    css_style = url_for('static', filename='style.css')
+    css_style = url_for("static", filename="lab1/style.css")
     return '''<!doctype html>
         <html>
         <link rel="stylesheet" href="''' + css_style + '''">
@@ -137,7 +138,7 @@ def counter():
 def clear_counter():
     global count
     count = 0
-    css_style = url_for('static', filename='style.css')
+    css_style = url_for("static", filename="lab1/style.css")
     return '''<!doctype html>
         <html>
         <link rel="stylesheet" href="''' + css_style + '''">
@@ -161,7 +162,7 @@ def info():
 
 @lab1.route("/lab1/created")
 def created():
-    css_style = url_for('static', filename='style.css')
+    css_style = url_for("static", filename="lab1/style.css")
     return '''<!doctype html>
         <html>
         <link rel="stylesheet" href="''' + css_style + '''">
@@ -177,7 +178,7 @@ def created():
 
 @lab1.route("/lab1/400")
 def code400():
-    css_style = url_for('static', filename='style.css')
+    css_style = url_for("static", filename="lab1/style.css")
     return '''<!doctype html>
         <html> 
         <link rel="stylesheet" href="''' + css_style + '''">
@@ -193,7 +194,7 @@ def code400():
 
 @lab1.route("/lab1/401")
 def code401():
-    css_style = url_for('static', filename='style.css')
+    css_style = url_for("static", filename="lab1/style.css")
     return '''<!doctype html>
         <html> 
         <link rel="stylesheet" href="''' + css_style + '''">
@@ -209,7 +210,7 @@ def code401():
 
 @lab1.route("/lab1/402")
 def code402():
-    css_style = url_for('static', filename='style.css')
+    css_style = url_for("static", filename="lab1/style.css")
     return '''<!doctype html>
         <html> 
         <link rel="stylesheet" href="''' + css_style + '''">
@@ -225,7 +226,7 @@ def code402():
 
 @lab1.route("/lab1/403")
 def code403():
-    css_style = url_for('static', filename='style.css')
+    css_style = url_for("static", filename="lab1/style.css")
     return '''<!doctype html>
         <html> 
         <link rel="stylesheet" href="''' + css_style + '''">
@@ -241,7 +242,7 @@ def code403():
 
 @lab1.route("/lab1/405")
 def code405():
-    css_style = url_for('static', filename='style.css')
+    css_style = url_for("static", filename="lab1/style.css")
     return '''<!doctype html>
         <html> 
         <link rel="stylesheet" href="''' + css_style + '''">
@@ -257,7 +258,7 @@ def code405():
 
 @lab1.route("/lab1/418")
 def code418():
-    css_style = url_for('static', filename='style.css')
+    css_style = url_for("static", filename="lab1/style.css")
     return '''<!doctype html>
         <html> 
         <link rel="stylesheet" href="''' + css_style + '''">
@@ -273,7 +274,7 @@ def code418():
 
 @lab1.route("/lab1/experiment")
 def experiment():
-    css_style = url_for('static', filename='style.css')
+    css_style = url_for("static", filename="lab1/style.css")
     a = 10
     b = 0
     return '''<!doctype html>
