@@ -5,7 +5,8 @@ lab3 = Blueprint('lab3', __name__)
 def lab():
     name = request.cookies.get('name')
     name_color = request.cookies.get('name_color')
-    return render_template('lab3/lab3.html', name=name, name_color=name_color)
+    age = request.cookies.get('age')
+    return render_template('lab3/lab3.html', name=name, name_color=name_color, age=age)
 
 @lab3.route('/lab3/cookie')
 def cookie():
@@ -18,9 +19,9 @@ def cookie():
 @lab3.route('/lab3/del_cookie')
 def del_cookie():
     resp = make_response(redirect('/lab3/'))
-    resp.set_cookie('name', 'None')
-    resp.set_cookie('age')
-    resp.set_cookie('name_color')
+    resp.delete_cookie('name')
+    resp.delete_cookie('age')
+    resp.delete_cookie('name_color')
     return resp
 
 @lab3.route('/lab3/form1')
