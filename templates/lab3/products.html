@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 3{% endblock %}
+
+{% block main %}
+    <h1>Поиск товаров</h1>
+    
+    <form method="get">
+        <div>
+            <label>Мин цена:</label>
+            <input type="number" name="min_price" value="{{ min_price }}" placeholder="{{ min_all }}">
+        </div>
+        
+        <div>
+            <label>Макс цена:</label>
+            <input type="number" name="max_price" value="{{ max_price }}" placeholder="{{ max_all }}">
+        </div>
+        
+        <div>
+            <button type="submit">Искать</button>
+            <button type="submit" name="reset">Сброс</button>
+        </div>
+    </form>
+    
+    <h2>Найдено: {{ products|length }} товаров</h2>
+    
+    {% if products|length == 0 %}
+        <p>Не найдено ни одного товара</p>
+    {% else %}
+        <table border="1" style="border-collapse: collapse; width: 100%; margin-top: 10px;">
+            <tr>
+                <th>Название</th>
+                <th>Цена</th>
+                <th>Бренд</th>
+                <th>Цвет</th>
+            </tr>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.name }}</td>
+                <td>{{ product.price }} руб.</td>
+                <td>{{ product.brand }}</td>
+                <td>{{ product.color }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+{% endblock %}
