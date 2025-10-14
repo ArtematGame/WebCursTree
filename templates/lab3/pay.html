@@ -10,6 +10,9 @@
     </div>
     
     <form action="/lab3/success" style="text-align: center;">
+        <!-- Добавьте это скрытое поле -->
+        <input type="hidden" name="price" value="{{ price }}">
+        
         <div>Номер банковской карты:</div>
         <label>
             <input type="text" name="card" pattern="\d{16}">

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 3{% endblock %}
+
+{% block main %}
+    <h1>Оформление железнодорожного билета</h1>
+
+    <form action="/lab3/ticket_result" style="text-align: center;">
+        <div>
+            <h3>ФИО пассажира:</h3>
+            <input type="text" name="fio" required>
+        </div>
+
+        <div>
+            <h3>Полка:</h3>
+            <label>
+                <input type="radio" value="lower" name="shelf" checked>Нижняя
+            </label><br>
+            <label>
+                <input type="radio" value="upper" name="shelf">Верхняя
+            </label><br>
+            <label>
+                <input type="radio" value="lower_side" name="shelf">Нижняя боковая
+            </label><br>
+            <label>
+                <input type="radio" value="upper_side" name="shelf">Верхняя боковая
+            </label>
+        </div>
+
+        <div>
+            <h3>Дополнительные услуги:</h3>
+            <label>
+                <input type="checkbox" name="linen">С бельём (+75 руб.)
+            </label><br>
+            <label>
+                <input type="checkbox" name="luggage">С багажом (+250 руб.)
+            </label><br>
+            <label>
+                <input type="checkbox" name="insurance">Страховка (+150 руб.)
+            </label>
+        </div>
+
+        <div>
+            <h3>Возраст:</h3>
+            <input type="number" name="age" min="1" max="120" required>
+        </div>
+
+        <div>
+            <h3>Откуда:</h3>
+            <input type="text" name="departure" required>
+
+            <h3>Куда:</h3>
+            <input type="text" name="destination" required>
+        </div>
+
+        <div>
+            <h3>Дата поездки:</h3>
+            <input type="date" name="travel_date" required>
+        </div>
+
+        <div>
+            <button type="submit">Оформить билет</button>
+        </div>
+    </form>
+{% endblock %}

@@ -47,7 +47,7 @@ def pay():
     price = 0
     drink = request.args.get('drink')
     # Пусть кофе стоит 120 рублей, чёрный чай – 80 рублей, зелёный – 70 рублей.
-    if drink == 'cofee':
+    if drink == 'coffee':
         price = 120
     elif drink == 'black-tea':
         price = 80
@@ -61,6 +61,11 @@ def pay():
         price += 10
 
     return render_template('lab3/pay.html', price=price)
+    
+@lab3.route('/lab3/success')
+def success():
+    price = request.args.get('price', 0)
+    return render_template('lab3/success.html', price=price)
 
 @lab3.route('/lab3/settings')
 def settings():
@@ -86,3 +91,43 @@ def settings():
     font_size = request.cookies.get('font_size')
     line_height = request.cookies.get('line_height')
     return render_template('lab3/settings.html', color=color, bg_color=bg_color, font_size=font_size, line_height=line_height)
+
+@lab3.route('/lab3/ticket')
+def ticket():
+    return render_template('lab3/ticket.html')
+
+@lab3.route('/lab3/ticket_result')
+def ticket_result():
+    price = 0
+    
+    # Взрослый билет стоит 1000 руб, детский — 700 руб.
+    age = int(request.args.get('age'))
+    if age < 18:
+        price = 700
+        is_child = True
+    else:
+        price = 1000
+        is_child = False
+
+    # Если полка нижняя или нижняя боковая, то к стоимости добавляется ещё 100 руб.
+    shelf = request.args.get('shelf')
+    if shelf == 'lower' or shelf == 'lower_side':
+        price += 100
+
+    # Бельё увеличивает стоимость на 75 рублей.
+    if request.args.get('linen') == 'on':
+        price += 75
+
+    # Если есть багаж, то стоимость увеличивается на 250 руб.
+    if request.args.get('luggage') == 'on':
+        price += 250
+
+    # Страховка увеличивает стоимость на 150 руб.
+    if request.args.get('insurance') == 'on':
+        price += 150
+
+    return render_template('lab3/ticket_result.html', price=price, is_child=is_child,
+                         fio=request.args.get('fio'), age=age,
+                         departure=request.args.get('departure'),
+                         destination=request.args.get('destination'),
+                         travel_date=request.args.get('travel_date'))
