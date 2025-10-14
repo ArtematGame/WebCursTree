@@ -66,3 +66,14 @@ def success():
     price = request.args.get('price', 0)
     return render_template('lab3/success.html', price=price)
 
+@lab3.route('/lab3/settings')
+def settings():
+    color = request.args.get('color')
+    if color:
+        resp = make_response(redirect('/lab3/settings'))
+        resp.set_cookie('color', color)
+        return resp
+
+    color = request.cookies.get('color')
+    resp = make_response(render_template('lab3/settings.html', color=color))
+    return resp
