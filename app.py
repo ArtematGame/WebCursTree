@@ -14,7 +14,7 @@ count = 0
 @app.route("/")
 @app.route("/index")
 def index():
-    css_path = url_for("static", filename="style.css")
+    css_path = url_for("static", filename="lab1/style.css")
     return '''<!doctype html>
         <html>
         <head>
@@ -33,17 +33,20 @@ def index():
                 <ul>
                     <li><a href="/lab2">Вторая лабораторная</a></li>
                 </ul>
+                <ul>
+                    <li><a href="/lab3">Третья лабораторная</a></li>
+                </ul>
             </main>
     
-            <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
+            <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2025</footer>
         </body>
         </html>'''
 
 logs=""
 @app.errorhandler(404)
 def not_found(err):
-    css = url_for('static', filename='style.css')
-    error_img = url_for('static', filename='404.png')
+    css = url_for('static', filename='lab1/style.css')
+    error_img = url_for('static', filename='lab1/404.png')
     global logs
     client_ip = request.remote_addr
     time = datetime.datetime.today()
@@ -59,19 +62,21 @@ def not_found(err):
                 <div>Код 404 Not Found указывает, что сервер не может найти запрашиваемый ресурс.</div>
                 <div style="text-align: center;">
                     <a href="/lab1">Меню лабораторной работы 1</a>
+                    <a href="/lab2">Меню лабораторной работы 2</a>
+                    <a href="/lab3">Меню лабораторной работы 3</a>
                 </div>
                 <hr>
                 <div>IP-адрес пользователя: ''' + client_ip + '''</div>
                 <div>Дата доступа: ''' + str(time) + '''</div>
                 <div>Лог посещений:</div>
                 ''' + logs + '''
-                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2025</footer>
           </body>
         </html>''', 404
 
 @app.errorhandler(500)
 def not_found2(err):
-    css_style = url_for('static', filename='style.css')
+    css_style = url_for('static', filename='lab1/style.css')
     return '''<!doctype html>
         <html> 
         <link rel="stylesheet" href="''' + css_style + '''">
@@ -79,6 +84,6 @@ def not_found2(err):
                 <title>НГТУ, ФБ, Лабораторная работа 2</title>
                 <header>НГТУ, ФБ, WEB-программирование, Лабораторная 2</header>
                 <div class='error1'>Внутренняя ошибка сервера! Сервер перегружен, либо произошла ошибка.</div>
-                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2024</footer>
+                <footer>Шельмин Артём Евгеньевич, ФБИ-31, 3 курс, 2025</footer>
           </body>
         </html>''', 500

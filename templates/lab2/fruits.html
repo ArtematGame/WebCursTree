@@ -7,7 +7,7 @@
 
     {% for fruit in fruits %}
     <div>
-        <img src="{{ url_for('static', filename=fruit.image) }}" alt="{{ fruit.name }}">
+        <img src="{{ url_for('static', filename='lab2/' + fruit.image) }}" alt="{{ fruit.name }}">
         <h2>{{ fruit.name }}</h2>
         <p>{{ fruit.description }}</p>
     </div>
