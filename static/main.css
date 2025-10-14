@@ -92,3 +92,8 @@ h2 {
     border-radius: 10px;
     background-color: #ecf0f1;
 }
+
+.error {
+    color: #e74c3c;
+    font-size: 14px;
+}
