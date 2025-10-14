@@ -22,6 +22,9 @@
             {% if request.cookies.get('font_size') %}
             font-size: {{ request.cookies.get('font_size') }};
             {% endif %}
+            {% if request.cookies.get('line_height') %}
+            line-height: {{ request.cookies.get('line_height') }};
+            {% endif %}
         }
     </style>
 </head>

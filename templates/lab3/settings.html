@@ -16,8 +16,14 @@
         </div>
 
         <div>
-            <label for="font_size">Выберите размер шрифта:</label>
-            <input type="text" id="font_size" name="font_size" value="{{ font_size or '16px' }}" placeholder="например: 20px">
+            <label for="font_size">Выберите размер шрифта текста:</label>
+            <input type="text" id="font_size" name="font_size" value="{{ font_size or '16px' }}" placeholder="например: 16px">
+        </div>
+
+        <div>
+            <label for="line_height">Межстрочный интервал:</label>
+            <input type="text" id="line_height" name="line_height" value="{{ line_height or '1.5' }}" placeholder="например: 1.5">
+            <small>Рекомендуемые значения: 1.2-1.8</small>
         </div>
         
         <div>

@@ -67,8 +67,9 @@ def settings():
     color = request.args.get('color')
     bg_color = request.args.get('bg_color')
     font_size = request.args.get('font_size')
+    line_height = request.args.get('line_height')
     
-    if color or bg_color or font_size:
+    if color or bg_color or font_size or line_height:
         resp = make_response(redirect('/lab3/settings'))
         if color:
             resp.set_cookie('color', color)
@@ -76,9 +77,12 @@ def settings():
             resp.set_cookie('bg_color', bg_color)
         if font_size:
             resp.set_cookie('font_size', font_size)
+        if line_height:
+            resp.set_cookie('line_height', line_height)
         return resp
     
     color = request.cookies.get('color')
     bg_color = request.cookies.get('bg_color')
     font_size = request.cookies.get('font_size')
-    return render_template('lab3/settings.html', color=color, bg_color=bg_color, font_size=font_size)
+    line_height = request.cookies.get('line_height')
+    return render_template('lab3/settings.html', color=color, bg_color=bg_color, font_size=font_size, line_height=line_height)
