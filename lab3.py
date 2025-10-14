@@ -210,3 +210,4 @@ def products_search():
                          min_all=min_all,
                          max_all=max_all)
 
+
