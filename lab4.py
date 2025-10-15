@@ -16,7 +16,7 @@ def div():
     if x1 == '' or x2 == '':
         return render_template('lab4/div.html', error='Оба поля должны быть заполнены!')
     
-    if x2 == 0:
+    if x2 == '0':
         return render_template('lab4/div.html', error='Делить на ноль нельзя!')
 
     x1 = int(x1)
