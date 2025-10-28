@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block lab %}Заказ зерна{% endblock %}
+
+{% block main %}
+    <h1>Заказ зерна</h1>
+    <form method="post">
+        <div>
+            <select name="grain">
+                <option value="barley">Ячмень</option>
+                <option value="oats">Овёс</option>
+                <option value="wheat">Пшеница</option>
+                <option value="rye">Рожь</option>
+            </select>
+        </div>
+        <div>
+            <input type="number" name="weight" placeholder="Вес в тоннах" value="1" step="0.1">
+        </div>
+        <div>
+            <button>Заказать</button>
+        </div>
+    </form>
+
+    {% if result %}
+        <div>
+            {{ result }}
+        </div>
+    {% endif %}
+
+    <div>
+        <a href="/lab4/mult-form">Назад к форме</a>
+    </div>
+{% endblock %}

@@ -5,12 +5,12 @@
 {% block main %}
     {% if authorized %}
         <h1>Добро пожаловать, {{ name }} ({{ sex }})</h1>
+        <div style="color: green; font-weight: bold;">Вход выполнен успешно!</div>
         <div>
             <form action="/lab4/logout" method="post">
                 <button>Выход</button>
             </form>
         </div>
-        <div style="color: green; font-weight: bold;">Вход выполнен успешно!</div>
         <div>
             <a href="/lab4/">Вернуться к заданиям</a>
         </div>

@@ -4,9 +4,25 @@
 
 {% block main %}
     <h1>Холодильник</h1>
-    <form action="/lab4/fridge-set" method="post">
+    
+    <form method="post" style="text-align: center;">
         <input type="number" name="temp" placeholder="Температура" value="-5">
-        <button>Установить</button>
+        <button type="submit">Установить</button>
     </form>
-    <a href="/lab4/">Назад</a>
+    
+    {% if error %}
+        <div style="color: red;">
+            {{ error }}
+        </div>
+    {% endif %}
+    
+    {% if result %}
+        <div style="color: green;">
+            {{ result }}
+        </div>
+    {% endif %}
+    
+    <div>
+        <a href="/lab4/">Вернуться к заданиям</a>
+    </div>
 {% endblock %}
