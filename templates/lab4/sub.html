@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block lab %}Деление чисел{% endblock %}
+{% block lab %}Вычитание чисел{% endblock %}
 
 {% block main %}
     {% if error %}
@@ -9,7 +9,7 @@
             <a href="/lab4/sub-form">Назад к форме</a>
         </div>
     {% else %}
-        <h1>Результат деления</h1>
+        <h1>Результат вычитания</h1>
         <div>{{ x1 }} - {{ x2 }} = {{ result }}</div>
         <div>
             <a href="/lab4/sub-form">Назад</a>
