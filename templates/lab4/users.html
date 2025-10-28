@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block lab %}Пользователи{% endblock %}
+
+{% block main %}
+    <h1>Все пользователи</h1>
+    
+    {% for user in users %}
+        <div>
+            {{ user.name }} ({{ user.login }}) - {{ user.sex }}
+            {% if user.login == login %}
+                <a href="/lab4/edit">[изменить]</a>
+            {% endif %}
+        </div>
+    {% endfor %}
+    
+    <form action="/lab4/delete" method="post" class="center-button">
+        <button>Удалить меня</button>
+    </form>
+
+    <div>
+        <a href="/lab4/">Вернуться к заданиям</a>
+    </div>
+{% endblock %}
