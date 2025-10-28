@@ -1,19 +1,16 @@
 {% extends "base.html" %}
 
-{% block lab %}Деление чисел{% endblock %}
+{% block lab %}Авторизуйтесь{% endblock %}
 
 {% block main %}
     {% if authorized %}
-        <h1>Добро пожаловать, {{ login }}</h1>
+        <h1>Добро пожаловать, {{ name }} ({{ sex }})</h1>
         <div>
             <form action="/lab4/logout" method="post">
                 <button>Выход</button>
             </form>
         </div>
         <div style="color: green; font-weight: bold;">Вход выполнен успешно!</div>
-        <div>
-            <a href="/lab4/login">Вернуться к входу</a>
-        </div>
         <div>
             <a href="/lab4/">Вернуться к заданиям</a>
         </div>
@@ -23,7 +20,7 @@
         <form method="post">
             <div>
                 <label for="login">Пользователь:</label>
-                <input type="text" id="login" name="login">
+                <input type="text" id="login" name="login" value="{{ login }}">
             </div>
             <div>
                 <label for="password">Пароль:</label>

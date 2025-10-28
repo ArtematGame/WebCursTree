@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block lab %}Холодильник{% endblock %}
+
+{% block main %}
+    <h1>Холодильник</h1>
+    <form action="/lab4/fridge-set" method="post">
+        <input type="number" name="temp" placeholder="Температура" value="-5">
+        <button>Установить</button>
+    </form>
+    <a href="/lab4/">Назад</a>
+{% endblock %}
