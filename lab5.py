@@ -78,5 +78,25 @@ def login():
     db_close(conn,cur)
     return render_template('lab5/success_login.html', login=login)
 
+@lab5.route('/lab5/create', methods=['GET', 'POST'])
+def create():
+    login = session.get('login')
+    if not login:
+        return redirect('/lab5/login')
 
+    if request.method == 'GET':
+        return render_template('lab5/create_article.html')
+    
+    title = request.form.get('title')
+    article_text = request.form.get('article_text')
  
+    conn, cur = db_connect()
+
+    cur.execute(f"SELECT id FROM users WHERE login='{login}';")
+    user_id = cur.fetchone()["id"]
+
+    # ИСПРАВЛЕНО - используем login_id и убран перенос строки
+    cur.execute(f"INSERT INTO articles(user_id, title, article_text) VALUES ({user_id}, '{title}', '{article_text}');")
+
+    db_close(conn, cur)
+    return redirect('/lab5')
