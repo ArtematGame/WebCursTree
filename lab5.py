@@ -127,10 +127,10 @@ def create():
                     (user_id, title, article_text))
 
     db_close(conn, cur)
-    return redirect('/lab5')
+    return redirect('/lab5/')  # ← ИСПРАВЛЕНО: добавлен слеш в конце
 
 @lab5.route('/lab5/list')
-def list_articles():
+def list_articles():  # ← ИСПРАВЛЕНО: переименовано из list
     login = session.get('login')
     if not login:
         return redirect('/lab5/login')
@@ -152,4 +152,4 @@ def list_articles():
     articles = cur.fetchall()
 
     db_close(conn, cur)
-    return render_template('/lab5/articles.html', articles=articles)
+    return render_template('lab5/articles.html', articles=articles)  # ← ИСПРАВЛЕНО: убрал слеш в начале
