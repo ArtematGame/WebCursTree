@@ -5,8 +5,21 @@
 {% block main %}
     <h1>Статьи</h1>
 
-    {% for article in articles %}
-        <h2>{{ article['title'] }}</h2>
-        <blockquote>{{ article['article_text'] }}</blockquote>
-    {% endfor %}
+    {% if articles %}
+        {% for article in articles %}
+            <h2>
+                {% if article['is_favorite'] %}💖{% endif %}{{ article['title'] }}
+            </h2>
+            <blockquote style="white-space: pre-wrap; word-wrap: break-word;">{{ article['article_text'] }}</blockquote>
+            <div>
+                <a href="/lab5/edit/{{ article['id'] }}">Редактировать</a>
+                <a href="/lab5/delete/{{ article['id'] }}">Удалить</a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="text-align: center;">У вас пока нет статей. <a href="/lab5/create">Создайте первую статью</a></p>
+    {% endif %}
+    <div>
+        <a href="/lab5/">Вернуться к заданиям</a>
+    </div>
 {% endblock %}

@@ -5,6 +5,10 @@
 {% block main %}
     <h1>Создание статьи</h1>
 
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
     <form method="post">
         <div>
             <label>
@@ -18,7 +22,24 @@
         </div>
 
         <div>
+            <label>
+                <input type="checkbox" name="is_favorite">
+                Добавить в избранное
+            </label>
+        </div>
+
+        <div>
+            <label>
+                <input type="checkbox" name="is_public">
+                Публичная статья
+            </label>
+        </div>
+
+        <div>
             <button type="submit">Готово</button>
         </div>
     </form>
+    <div>
+        <a href="/lab5/">Вернуться к заданиям</a>
+    </div>
 {% endblock %}
