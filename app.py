@@ -4,7 +4,7 @@ from lab1 import lab1
 from lab2 import lab2
 from lab3 import lab3
 from lab4 import lab4
-from lab4 import lab5
+from lab5 import lab5
 
 app = Flask(__name__)
 
@@ -45,6 +45,9 @@ def index():
                 </ul>
                 <ul>
                     <li><a href="/lab4">Четвёртая лабораторная</a></li>
+                </ul>
+                <ul>
+                    <li><a href="/lab5">Пятая лабораторная</a></li>
                 </ul>
             </main>
     
