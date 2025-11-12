@@ -157,8 +157,7 @@ def list_articles():
     else:
         cur.execute("SELECT id FROM users WHERE login=?;", (login,))
         
-    user_row = cur.fetchone()
-    user_id = user_row[0]
+    user_id = cur.fetchone()["id"]
 
     # Исправляем сортировку - сначала избранные, потом остальные
     if current_app.config['DB_TYPE'] == 'postgres':
