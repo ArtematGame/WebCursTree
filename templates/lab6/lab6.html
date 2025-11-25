@@ -33,6 +33,12 @@ function getOfficeList() {
             bookingButton.onclick = function() {booking(office.number)};
             li.appendChild(bookingButton);
             
+            const cancelButton = document.createElement('button');
+            cancelButton.innerText = 'освободить';
+            cancelButton.style.marginLeft = '15px';
+            cancelButton.onclick = function() {cancellation(office.number)};
+            li.appendChild(cancelButton);
+
             ul.appendChild(li);
         }
     });
@@ -62,6 +68,46 @@ function booking(officeNumber) {
                     break;
                 case 2:
                     alert('Офис уже арендуется');
+                    break;
+                case -32601:
+                    alert('Странная ошибка')
+                    break;
+            }
+        }
+        else {
+            document.getElementById('office-list').innerHTML = '';
+                    getOfficeList();
+        }
+    });
+}
+
+function cancellation(officeNumber) {
+    const url = '/lab6/json-rpc-api/';
+    const json = {
+        'jsonrpc': '2.0',
+        'method': 'cancellation',
+        'params': officeNumber,
+        'id': Math.round(Math.random()*1000)
+    };
+    fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(json)
+    })
+    .then(function(response) {
+        return response.json()
+    })
+    .then(function(data) {
+        if(data.error) {
+            switch(data.error.code) {
+                case 1:
+                    alert('Вы не авторизованы, пожалуйста, атворизуйтесь');
+                    break;
+                case 3:
+                    alert('Офис не арендован');
+                    break;
+                case 4:
+                    alert('Нельзя снять чужую аренду');
                     break;
                 case -32601:
                     alert('Странная ошибка')
