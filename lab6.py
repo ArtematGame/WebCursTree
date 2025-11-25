@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, session, current_app
+from flask import Blueprint, render_template, request, session, redirect
 
 lab6 = Blueprint('lab6', __name__)
 
@@ -8,7 +8,12 @@ for i in range (1, 11):
 
 @lab6.route('/lab6/')
 def main():
-    return render_template('lab6/lab6.html')
+    return render_template('lab6/lab6.html', login=session.get('login')) 
+
+@lab6.route('/lab6/logout')
+def logout():
+    session.pop('login', None)
+    return redirect('/lab6/')
 
 @lab6.route('/lab6/json-rpc-api/', methods = ['POST'])
 def api():
@@ -21,6 +26,38 @@ def api():
             'id': id
         }
     
+    login = session.get('login')
+    if not login:
+        return {
+        'jsonrpc': '2.0',
+        'error': {
+            'code': 1,
+            'message': 'Unauthorized'
+        },
+        'id': id
+    }
+
+    if data['method'] == 'booking':
+        office_number = data['params']
+        for office in offices:
+            if office['number'] == office_number:
+                if office['tenant'] != '':
+                    return {
+                        'jsonrpc': '2.0',
+                        'error': {
+                            'code': 2,
+                            'message': 'Already booked'
+                        },
+                        'id': id    
+                    }
+                
+                office['tenant'] = login
+                return {
+                    'jsonrpc': '2.0',
+                    'result': 'success',
+                    'id': id
+                }
+
     return {
         'jsonrpc': '2.0',
         'error': {

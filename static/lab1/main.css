@@ -117,3 +117,7 @@ button:hover {
 .center-button {
     text-align: center;
 }
+
+#office-list li {
+    margin-bottom: 5px;
+}
