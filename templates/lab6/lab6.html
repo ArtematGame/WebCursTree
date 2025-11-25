@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 6{% endblock %}
+
+{% block main %}
+
+    <h1>API JSON-RPC</h1>
+    <div>
+        Список сделанных страниц:
+    </div>
+    
+    <div class="center-block">
+        <ol>
+            <li><a href="/lab5/register">Регистрация</a></li>
+            <li><a href="/lab5/login">Войти</a></li>
+            <li><a href="/lab5/create">Создать статью</a></li>
+            <li><a href="/lab5/list">Список статей</a></li>
+            <li><a href="/lab5/public">Публичные статьи</a></li>
+            <li><a href="/lab5/users">Все пользователи</a></li>
+            <li><a href="/lab5/profile">Мой профиль</a></li>
+        </ol>
+    </div>
+
+{% endblock %}
