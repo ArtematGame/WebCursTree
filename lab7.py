@@ -48,3 +48,8 @@ def get_film(id):
         abort(404, description="Фильм не найден")
     
     return jsonify(films[id])
+
+@lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
+def del_film(id):
+    del films[id]
+    return '', 204
