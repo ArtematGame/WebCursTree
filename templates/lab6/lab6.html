@@ -45,7 +45,7 @@ function getOfficeList() {
 
             ul.appendChild(li);
 
-            if (office.tenant) {
+            if (office.tenant && office.tenant == '{{ login }}') {
                 totalCost += office.price;
                 rentedOffices.push(`Офис ${office.number} - ${office.price} руб.`);
             }
