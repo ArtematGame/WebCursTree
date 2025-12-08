@@ -48,3 +48,20 @@ def del_film(id):
         abort(404, description="Фильм не найден")
     del films[id]
     return '', 204
+
+@lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
+def put_film(id):
+    # Проверка на принадлежность ID корректному диапазону
+    if id < 0 or id >= len(films):
+        abort(404, description="Фильм не найден")
+    
+    film = request.get_json()
+    films[id] = film
+    return films[id]
+
+@lab7.route('/lab7/rest-api/films/', methods=['POST'])
+def add_film():
+    film = request.get_json()
+    films.append(film)
+    # Фильмы вставляются в конец списка, поэтому возвращаем новую длину списка за вычетом единицы
+    return len(films) - 1
