@@ -41,6 +41,13 @@ films = [
 def get_films():
     return (films)
 
+@lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
+def get_film(id):
+    # Проверка на принадлежность ID корректному диапазону
+    if id < 0 or id >= len(films):
+        abort(404, description="Фильм не найден")
+    return films[id]
+
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
 def del_film(id):
     # Проверка на принадлежность ID корректному диапазону
