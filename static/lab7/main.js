@@ -82,7 +82,7 @@ function sendFilm() {
         description: document.getElementById('description').value
     }
 
-    const url = `/lab7/rest-api/films/${id}`;
+    const url = '/lab7/rest-api/films/';
     const method = id === '' ? 'POST' : 'PUT';
 
     fetch(url, {
@@ -90,9 +90,17 @@ function sendFilm() {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(film)
     })
-    .then(function() {
-        fillFilmList();
-        hideModal();
+    .then(function(resp) {
+        if (resp.ok) {
+            fillFilmList();
+            hideModal();
+            return {};    
+        }
+        return resp.json();
+    })
+    .then(function (errors) {
+        if(errors.description)
+            document.getElementById('description-error').innerText = errors.description;
     });
 }
 

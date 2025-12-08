@@ -39,14 +39,14 @@ films = [
 
 @lab7.route('/lab7/rest-api/films/', methods=['GET'])
 def get_films():
-    return (films)
+    return jsonify(films)  # Используем jsonify для корректного ответа
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
 def get_film(id):
     # Проверка на принадлежность ID корректному диапазону
     if id < 0 or id >= len(films):
         abort(404, description="Фильм не найден")
-    return films[id]
+    return jsonify(films[id])  # Используем jsonify
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
 def del_film(id):
@@ -63,12 +63,17 @@ def put_film(id):
         abort(404, description="Фильм не найден")
     
     film = request.get_json()
+    if film['description'] == '':
+        return jsonify({'description': 'Заполните описание'}), 400
     films[id] = film
-    return films[id]
+    return jsonify(films[id])  # Используем jsonify
 
 @lab7.route('/lab7/rest-api/films/', methods=['POST'])
 def add_film():
     film = request.get_json()
+    if film['description'] == '':
+        return jsonify({'description': 'Заполните описание'}), 400
     films.append(film)
     # Фильмы вставляются в конец списка, поэтому возвращаем новую длину списка за вычетом единицы
-    return len(films) - 1
+    return jsonify(len(films) - 1)  # Используем jsonify
+
