@@ -8,7 +8,7 @@ lab8 = Blueprint('lab8', __name__)
 
 @lab8.route('/lab8/')
 def main():
-    # Добавляем проверку текущего пользователя
+    # Проверяем авторизацию через Flask-Login
     login = current_user.login if current_user.is_authenticated else None
     return render_template('lab8/lab8.html', login=login)
 
@@ -20,6 +20,7 @@ def register():
     login_form = request.form.get('login')
     password_form = request.form.get('password')
 
+    # Проверка на пустые значения (Задание 2 из методички)
     if not login_form:
         return render_template('lab8/register.html',
                                error='Логин не может быть пустым')
@@ -28,11 +29,13 @@ def register():
         return render_template('lab8/register.html',
                                error='Пароль не может быть пустым')
 
+    # Поиск пользователя через ORM (методичка стр. 13)
     login_exists = users.query.filter_by(login=login_form).first()
     if login_exists:
         return render_template('lab8/register.html',
                                error='Такой пользователь уже существует')
 
+    # Создание пользователя через ORM
     password_hash = generate_password_hash(password_form)
     new_user = users(login=login_form, password=password_hash)
     db.session.add(new_user)
@@ -53,6 +56,7 @@ def login():
     # ЗАДАНИЕ 3: Галочка "запомнить меня"
     remember_me = request.form.get('remember_me')
     
+    # Проверка на пустые значения
     if not login_form:
         return render_template('lab8/login.html',
                                error='Логин не может быть пустым')
@@ -61,6 +65,7 @@ def login():
         return render_template('lab8/login.html',
                                error='Пароль не может быть пустым')
 
+    # Поиск пользователя через ORM
     user = users.query.filter_by(login=login_form).first()
 
     if user and check_password_hash(user.password, password_form):
@@ -73,9 +78,9 @@ def login():
                            error='Ошибка входа: логин и/или пароль неверны')
 
 @lab8.route('/lab8/articles/')
-@login_required
+@login_required  # Декоратор Flask-Login (методичка стр. 19)
 def article_list():
-    # Получаем статьи текущего пользователя
+    # Получаем статьи текущего пользователя через ORM
     user_articles = articles.query.filter_by(login_id=current_user.id).all()
     return render_template('lab8/articles.html', articles=user_articles)
 
@@ -97,6 +102,7 @@ def create_article():
         return render_template('lab8/create.html',
                                error='Текст статьи не может быть пустым')
     
+    # Создание статьи через ORM
     new_article = articles(
         login_id=current_user.id,
         title=title,
@@ -115,6 +121,7 @@ def create_article():
 @login_required
 def edit_article(article_id):
     # ЗАДАНИЕ 5: Редактирование статьи
+    # Получение статьи через ORM
     article = articles.query.get_or_404(article_id)
     
     # Проверяем, принадлежит ли статья текущему пользователю
@@ -135,6 +142,7 @@ def edit_article(article_id):
         return render_template('lab8/edit.html', article=article,
                                error='Текст статьи не может быть пустым')
     
+    # Обновление статьи через ORM
     article.title = title
     article.article_text = article_text
     
@@ -152,6 +160,7 @@ def delete_article(article_id):
     if article.login_id != current_user.id:
         abort(403)  # Запрещено
     
+    # Удаление статьи через ORM
     db.session.delete(article)
     db.session.commit()
     
