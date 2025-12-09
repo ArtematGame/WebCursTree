@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, request, jsonify, abort
+from flask import Blueprint, render_template, request, jsonify, abort, current_app
+import psycopg2
+from psycopg2.extras import RealDictCursor
 from datetime import datetime
 import sqlite3
 from os import path
