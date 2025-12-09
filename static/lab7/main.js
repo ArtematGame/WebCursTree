@@ -6,51 +6,51 @@ function fillFilmList() {
     .then(function (films) {
         let tbody = document.getElementById('film-list');
         tbody.innerHTML = '';
-        
-        // Используем forEach вместо for, чтобы избежать проблем с замыканием
-        films.forEach(function(film) {
+        for(let i = 0; i < films.length; i++) {
             let tr = document.createElement('tr');
 
-            let tdTitleRu = document.createElement('td');
-            let tdTitleOrig = document.createElement('td');
+            let tdTitleRu = document.createElement('td');  // Русское название
+            let tdTitleOrig = document.createElement('td');  // Оригинальное название
             let tdYear = document.createElement('td');
             let tdActions = document.createElement('td');
 
-            // Русское название
-            tdTitleRu.innerText = film.title_ru;
+            // ПЕРВЫЙ столбец: русское название
+            tdTitleRu.innerText = films[i].title_ru;
             
-            // Оригинальное название
-            tdTitleOrig.innerText = film.title;
+            // ВТОРОЙ столбец: оригинальное название
+            // Всегда показываем оригинальное название, даже если оно совпадает с русским
+            tdTitleOrig.innerText = films[i].title;
+            
+            // Добавляем стиль курсива и серый цвет
             tdTitleOrig.style.fontStyle = 'italic';
             tdTitleOrig.style.color = '#666';
             
-            tdYear.innerText = film.year;
+            tdYear.innerText = films[i].year;
 
             let editButton = document.createElement('button');
             editButton.innerText = 'редактировать';
-            // Передаем реальный ID фильма из базы данных
             editButton.onclick = function() {
-                editFilm(film.id);
+                editFilm(i);
             };
 
             let delButton = document.createElement('button');
             delButton.innerText = 'удалить';
-            // Передаем реальный ID фильма из базы данных
             delButton.onclick = function() {
-                deleteFilm(film.id, film.title_ru);
+                deleteFilm(i, films[i].title_ru);
             };
 
             tdActions.append(editButton);
-            tdActions.append(delButton);
+            tdActions.append(delButton);  
 
-            tr.append(tdTitleRu);
-            tr.append(tdTitleOrig);
+            // Порядок: русское, оригинальное, год, действия
+            tr.append(tdTitleRu);     // Русское название ПЕРВЫМ
+            tr.append(tdTitleOrig);   // Оригинальное название ВТОРЫМ
             tr.append(tdYear);
             tr.append(tdActions);
 
             tbody.append(tr);
-        });
-    });
+        }
+    })
 }
 
 function deleteFilm(id, title) {
@@ -58,24 +58,14 @@ function deleteFilm(id, title) {
         return;
 
     fetch(`/lab7/rest-api/films/${id}`, {method: 'DELETE'})
-        .then(function(response) {
-            if (response.ok) {
-                fillFilmList();
-            } else {
-                console.error('Ошибка при удалении:', response.status);
-                alert('Ошибка при удалении фильма');
-            }
-        })
-        .catch(function(error) {
-            console.error('Ошибка:', error);
-            alert('Ошибка при удалении фильма');
+        .then(function () {
+            fillFilmList();
         });
 }
 
 function showModal() {
     document.querySelector('div.modal').style.display = 'block';
 }
-
 function hideModal() {
     document.querySelector('div.modal').style.display = 'none';
 }
@@ -90,6 +80,7 @@ function addFilm() {
     document.getElementById('title-ru').value = '';
     document.getElementById('year').value = '';
     document.getElementById('description').value = '';
+    // Очищаем ошибку при открытии модального окна
     document.getElementById('description-error').innerText = '';
     showModal();
 }
@@ -101,8 +92,9 @@ function sendFilm() {
         title_ru: document.getElementById('title-ru').value,
         year: document.getElementById('year').value,
         description: document.getElementById('description').value
-    };
+    }
 
+    // Очищаем ошибку перед отправкой
     document.getElementById('description-error').innerText = '';
 
     const url = id === '' ? '/lab7/rest-api/films/' : `/lab7/rest-api/films/${id}`;
@@ -121,36 +113,40 @@ function sendFilm() {
         }
         return resp.json();
     })
-    .then(function(data) {
-        if (data && data.description) {
-            document.getElementById('description-error').innerText = data.description;
-        }
-    })
-    .catch(function(error) {
-        console.error('Ошибка:', error);
-        alert('Ошибка при сохранении фильма');
+    .then(function (errors) {
+        if(errors.description)
+            document.getElementById('description-error').innerText = errors.description;
     });
 }
 
 function editFilm(id) {
     fetch(`/lab7/rest-api/films/${id}`)
-    .then(function(response) {
-        if (!response.ok) {
-            throw new Error('Фильм не найден');
-        }
-        return response.json();
+    .then(function (data) {
+        return  data.json();
     })
-    .then(function(film) {
+    .then(function (film) {
         document.getElementById('id').value = id;
         document.getElementById('title').value = film.title;
         document.getElementById('title-ru').value = film.title_ru;
         document.getElementById('year').value = film.year;
         document.getElementById('description').value = film.description;
+        // Очищаем ошибку при открытии модального окна для редактирования
         document.getElementById('description-error').innerText = '';
         showModal();
+    });
+}
+
+function editFilm(id) {
+    fetch(`/lab7/rest-api/films/${id}`)
+    .then(function (data) {
+        return  data.json();
     })
-    .catch(function(error) {
-        console.error('Ошибка:', error);
-        alert('Не удалось загрузить данные фильма');
+    .then(function (film) {
+        document.getElementById('id').value = id;
+        document.getElementById('title').value = film.title;
+        document.getElementById('title-ru').value = film.title_ru;
+        document.getElementById('year').value = film.year;
+        document.getElementById('description').value = film.description;
+        showModal();
     });
 }
