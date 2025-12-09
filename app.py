@@ -3,6 +3,7 @@ import datetime
 import os
 from flask_sqlalchemy import SQLAlchemy
 from db import db
+from os import path
 
 from lab1 import lab1
 from lab2 import lab2
