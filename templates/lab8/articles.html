@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block lab %}Мои статьи{% endblock %}
+
+{% block main %}
+    <h1>Мои статьи</h1>
+    
+    <button onclick="location.href='/lab8/create/'">Создать статью</button>
+    
+    {% if articles %}
+        {% for article in articles %}
+            <div style="border: 1px solid #ccc; margin: 10px 0; padding: 10px;">
+                <h3>{{ article.title }}</h3>
+                <p>{{ article.article_text }}</p>
+                
+                <div>
+                    <button onclick="location.href='/lab8/edit/{{ article.id }}'">Редактировать</button>
+                    <form action="/lab8/delete/{{ article.id }}" method="POST" style="display: inline;">
+                        <button type="submit" onclick="return confirm('Удалить статью?')">Удалить</button>
+                    </form>
+                </div>
+            </div>
+            <div>
+                <a href="/lab8/">Вернуться к заданиям</a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Нет статей</p>
+    {% endif %}
+{% endblock %}
