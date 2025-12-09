@@ -1,3 +1,5 @@
+[file name]: main.js
+[file content begin]
 function fillFilmList() {
     fetch(`/lab7/rest-api/films/`)
     .then(function (data) {
@@ -30,13 +32,13 @@ function fillFilmList() {
             let editButton = document.createElement('button');
             editButton.innerText = 'редактировать';
             editButton.onclick = function() {
-                editFilm(i);
+                editFilm(films[i].id);  // Используем реальный ID из базы
             };
 
             let delButton = document.createElement('button');
             delButton.innerText = 'удалить';
             delButton.onclick = function() {
-                deleteFilm(i, films[i].title_ru);
+                deleteFilm(films[i].id, films[i].title_ru);  // Используем реальный ID из базы
             };
 
             tdActions.append(editButton);
@@ -50,7 +52,7 @@ function fillFilmList() {
 
             tbody.append(tr);
         }
-    })
+    });
 }
 
 function deleteFilm(id, title) {
@@ -125,28 +127,13 @@ function editFilm(id) {
         return  data.json();
     })
     .then(function (film) {
-        document.getElementById('id').value = id;
+        document.getElementById('id').value = film.id;  // Используем ID из ответа
         document.getElementById('title').value = film.title;
         document.getElementById('title-ru').value = film.title_ru;
         document.getElementById('year').value = film.year;
         document.getElementById('description').value = film.description;
         // Очищаем ошибку при открытии модального окна для редактирования
         document.getElementById('description-error').innerText = '';
-        showModal();
-    });
-}
-
-function editFilm(id) {
-    fetch(`/lab7/rest-api/films/${id}`)
-    .then(function (data) {
-        return  data.json();
-    })
-    .then(function (film) {
-        document.getElementById('id').value = id;
-        document.getElementById('title').value = film.title;
-        document.getElementById('title-ru').value = film.title_ru;
-        document.getElementById('year').value = film.year;
-        document.getElementById('description').value = film.description;
         showModal();
     });
 }
