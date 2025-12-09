@@ -7,6 +7,10 @@ from os import path
 
 lab7 = Blueprint('lab7', __name__)
 
+@lab7.route('/lab7/')
+def main():
+    return render_template('lab7/index.html') 
+
 def db_connect():
     if current_app.config['DB_TYPE'] == 'postgres':
         conn = psycopg2.connect(
@@ -29,10 +33,6 @@ def db_close(conn, cur):
     conn.commit()
     cur.close()
     conn.close()
-
-@lab7.route('/lab7/')
-def main():
-    return render_template('lab7/index.html') 
 
 @lab7.route('/lab7/rest-api/films/', methods=['GET'])
 def get_films():
