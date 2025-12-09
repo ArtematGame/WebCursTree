@@ -1,130 +1,148 @@
-from flask import Blueprint, render_template, request, jsonify, abort
+from flask import Blueprint, render_template, request, jsonify, abort, current_app
 from datetime import datetime
+import sqlite3
+from os import path
 
 lab7 = Blueprint('lab7', __name__)
 
+def db_connect():
+    """Создание соединения с базой данных по аналогии с lab6"""
+    if current_app.config.get('DB_TYPE') == 'postgres':
+        # Для PostgreSQL (если понадобится)
+        import psycopg2
+        from psycopg2.extras import RealDictCursor
+        conn = psycopg2.connect(
+            host='127.0.0.1',
+            database='films_database',
+            user='films_user',
+            password='123'
+        )
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+    else:
+        # По умолчанию используем SQLite (как в вашем примере)
+        dir_path = path.dirname(path.realpath(__file__))
+        db_path = path.join(dir_path, "database.db")
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+
+    return conn, cur
+
+def db_close(conn, cur):
+    """Закрытие соединения с базой данных"""
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
 @lab7.route('/lab7/')
 def main():
-    return render_template('lab7/index.html') 
-
-films = [
-    {
-        "title": "Intouchables",
-        "title_ru": "1+1",
-        "year": 2011,
-        "description": "Пострадав в результате несчастного случая, богатый аристократ Филипп нанимает в помощники человека, \
-            который менее всего подходит для этой работы, – молодого жителя предместья Дрисса, только что освободившегося из тюрьмы. \
-            Несмотря на то, что Филипп прикован к инвалидному креслу, Дриссу удается привнести в размеренную жизнь аристократа дух приключений."
-    },
-    {
-        "title": "The Gentlemen",
-        "title_ru": "Джентльмены",
-        "year": 2019,
-        "description": "Один ушлый американец ещё со студенческих лет приторговывал наркотиками, а теперь придумал схему нелегального \
-            обогащения с использованием поместий обедневшей английской аристократии и очень неплохо на этом разбогател. Другой пронырливый \
-            журналист приходит к Рэю, правой руке американца, и предлагает тому купить киносценарий, в котором подробно описаны преступления \
-            его босса при участии других представителей лондонского криминального мира — партнёра-еврея, китайской диаспоры, чернокожих \
-            спортсменов и даже русского олигарха."
-    },
-    {
-        "title": "Fight Club",
-        "title_ru": "Бойцовский клуб",
-        "year": 1999,
-        "description": "Сотрудник страховой компании страдает хронической бессонницей и отчаянно пытается вырваться из мучительно скучной жизни. \
-            Однажды в очередной командировке он встречает некоего Тайлера Дёрдена — харизматического торговца мылом с извращенной философией. Тайлер уверен, \
-            что самосовершенствование — удел слабых, а единственное, ради чего стоит жить, — саморазрушение. Проходит немного времени, и вот уже новые друзья лупят друг \
-            друга почем зря на стоянке перед баром, и очищающий мордобой доставляет им высшее блаженство. Приобщая других мужчин к простым радостям \
-            физической жестокости, они основывают тайный Бойцовский клуб, который начинает пользоваться невероятной популярностью."
-    }
-]
+    return render_template('lab7/index.html')
 
 @lab7.route('/lab7/rest-api/films/', methods=['GET'])
 def get_films():
-    return jsonify(films)  # Используем jsonify для корректного ответа
+    conn, cur = db_connect()
+    cur.execute("SELECT * FROM films ORDER BY id")
+    films = cur.fetchall()
+    
+    films_list = []
+    for film in films:
+        films_list.append(dict(film))
+    
+    db_close(conn, cur)
+    return jsonify(films_list)
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
 def get_film(id):
-    # Проверка на принадлежность ID корректному диапазону
-    if id < 0 or id >= len(films):
+    conn, cur = db_connect()
+    cur.execute("SELECT * FROM films WHERE id = ?", (id,))
+    film = cur.fetchone()
+    db_close(conn, cur)
+    
+    if not film:
         abort(404, description="Фильм не найден")
-    return jsonify(films[id])  # Используем jsonify
+    
+    return jsonify(dict(film))
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
 def del_film(id):
-    # Проверка на принадлежность ID корректному диапазону
-    if id < 0 or id >= len(films):
-        abort(404, description="Фильм не найден")
-    del films[id]
+    conn, cur = db_connect()
+    cur.execute("DELETE FROM films WHERE id = ?", (id,))
+    db_close(conn, cur)
     return '', 204
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
 def put_film(id):
-    if id < 0 or id >= len(films):
-        abort(404, description="Фильм не найден")
-    
     film = request.get_json()
     
-    # Проверка русского названия
+    # Проверки
     if not film.get('title_ru'):
         return jsonify({'description': 'Заполните русское название'}), 400
     
-    # Если оригинальное пустое - копируем русское
     if not film.get('title'):
         film['title'] = film['title_ru']
     
-    # Проверка года
     if not film.get('year'):
         return jsonify({'description': 'Укажите год'}), 400
     
     try:
         year = int(film['year'])
-        current_year = datetime.now().year
-        if year < 1895 or year > current_year:
-            return jsonify({'description': f'Год должен быть от 1895 до {current_year}'}), 400
+        if year < 1895 or year > 2024:
+            return jsonify({'description': 'Год должен быть от 1895 до 2024'}), 400
     except ValueError:
         return jsonify({'description': 'Год должен быть числом'}), 400
     
-    # Проверка описания (как было)
     if not film.get('description'):
         return jsonify({'description': 'Заполните описание'}), 400
     
     if len(film.get('description', '')) > 2000:
         return jsonify({'description': 'Описание должно быть не более 2000 символов'}), 400
     
-    films[id] = film
-    return jsonify(films[id])
+    conn, cur = db_connect()
+    cur.execute("""
+        UPDATE films 
+        SET title = ?, title_ru = ?, year = ?, description = ? 
+        WHERE id = ?
+    """, (film['title'], film['title_ru'], film['year'], film['description'], id))
+    db_close(conn, cur)
+    
+    return jsonify({'id': id, 'title': film['title'], 'title_ru': film['title_ru'], 'year': film['year'], 'description': film['description']})
 
 @lab7.route('/lab7/rest-api/films/', methods=['POST'])
 def add_film():
     film = request.get_json()
     
-    # Проверка русского названия
+    # Проверки
     if not film.get('title_ru'):
         return jsonify({'description': 'Заполните русское название'}), 400
     
-    # Если оригинальное пустое - копируем русское
     if not film.get('title'):
         film['title'] = film['title_ru']
     
-    # Проверка года
     if not film.get('year'):
         return jsonify({'description': 'Укажите год'}), 400
     
     try:
         year = int(film['year'])
-        current_year = datetime.now().year
-        if year < 1895 or year > current_year:
-            return jsonify({'description': f'Год должен быть от 1895 до {current_year}'}), 400
+        if year < 1895 or year > 2024:
+            return jsonify({'description': 'Год должен быть от 1895 до 2024'}), 400
     except ValueError:
         return jsonify({'description': 'Год должен быть числом'}), 400
     
-    # Проверка описания
     if not film.get('description'):
         return jsonify({'description': 'Заполните описание'}), 400
     
     if len(film.get('description', '')) > 2000:
         return jsonify({'description': 'Описание должно быть не более 2000 символов'}), 400
     
-    films.append(film)
-    return jsonify(len(films) - 1)
-
+    conn, cur = db_connect()
+    cur.execute("""
+        INSERT INTO films (title, title_ru, year, description) 
+        VALUES (?, ?, ?, ?)
+    """, (film['title'], film['title_ru'], film['year'], film['description']))
+    
+    new_id = cur.lastrowid
+    
+    db_close(conn, cur)
+    
+    return jsonify({'id': new_id, 'title': film['title'], 'title_ru': film['title_ru'], 'year': film['year'], 'description': film['description']})
