@@ -12,7 +12,7 @@ def main():
     return render_template('lab7/index.html') 
 
 def db_connect():
-    if current_app.config['DB_TYPE'] == 'postgres':
+    if current_app.config.get('DB_TYPE') == 'postgres':
         conn = psycopg2.connect(
             host='127.0.0.1',
             database='artem_shelmin_knowledge_base',
@@ -36,20 +36,28 @@ def db_close(conn, cur):
 
 @lab7.route('/lab7/rest-api/films/', methods=['GET'])
 def get_films():
-    conn = db_connect()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM films")
+    conn, cur = db_connect()
+    
+    if current_app.config.get('DB_TYPE') == 'postgres':
+        cur.execute("SELECT * FROM films")
+    else:
+        cur.execute("SELECT * FROM films")
+    
     films = [dict(row) for row in cur.fetchall()]
-    conn.close()
+    db_close(conn, cur)
     return jsonify(films)
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
 def get_film(id):
-    conn = db_connect()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM films WHERE id = ?", (id,))
+    conn, cur = db_connect()
+    
+    if current_app.config.get('DB_TYPE') == 'postgres':
+        cur.execute("SELECT * FROM films WHERE id = %s", (id,))
+    else:
+        cur.execute("SELECT * FROM films WHERE id = ?", (id,))
+    
     film = cur.fetchone()
-    conn.close()
+    db_close(conn, cur)
     
     if not film:
         abort(404, description="Фильм не найден")
@@ -57,11 +65,14 @@ def get_film(id):
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
 def del_film(id):
-    conn = db_connect()
-    cur = conn.cursor()
-    cur.execute("DELETE FROM films WHERE id = ?", (id,))
-    conn.commit()
-    conn.close()
+    conn, cur = db_connect()
+    
+    if current_app.config.get('DB_TYPE') == 'postgres':
+        cur.execute("DELETE FROM films WHERE id = %s", (id,))
+    else:
+        cur.execute("DELETE FROM films WHERE id = ?", (id,))
+    
+    db_close(conn, cur)
     return '', 204
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
@@ -95,16 +106,22 @@ def put_film(id):
     if len(film.get('description', '')) > 2000:
         return jsonify({'description': 'Описание должно быть не более 2000 символов'}), 400
     
-    conn = db_connect()
-    cur = conn.cursor()
-    cur.execute("""
-        UPDATE films 
-        SET title = ?, title_ru = ?, year = ?, description = ?
-        WHERE id = ?
-    """, (film['title'], film['title_ru'], film['year'], film['description'], id))
-    conn.commit()
-    conn.close()
+    conn, cur = db_connect()
     
+    if current_app.config.get('DB_TYPE') == 'postgres':
+        cur.execute("""
+            UPDATE films 
+            SET title = %s, title_ru = %s, year = %s, description = %s
+            WHERE id = %s
+        """, (film['title'], film['title_ru'], film['year'], film['description'], id))
+    else:
+        cur.execute("""
+            UPDATE films 
+            SET title = ?, title_ru = ?, year = ?, description = ?
+            WHERE id = ?
+        """, (film['title'], film['title_ru'], film['year'], film['description'], id))
+    
+    db_close(conn, cur)
     return jsonify(film)
 
 @lab7.route('/lab7/rest-api/films/', methods=['POST'])
@@ -138,15 +155,21 @@ def add_film():
     if len(film.get('description', '')) > 2000:
         return jsonify({'description': 'Описание должно быть не более 2000 символов'}), 400
     
-    conn = db_connect()
-    cur = conn.cursor()
-    cur.execute("""
-        INSERT INTO films (title, title_ru, year, description)
-        VALUES (?, ?, ?, ?)
-    """, (film['title'], film['title_ru'], film['year'], film['description']))
+    conn, cur = db_connect()
+    
+    if current_app.config.get('DB_TYPE') == 'postgres':
+        cur.execute("""
+            INSERT INTO films (title, title_ru, year, description)
+            VALUES (%s, %s, %s, %s)
+        """, (film['title'], film['title_ru'], film['year'], film['description']))
+    else:
+        cur.execute("""
+            INSERT INTO films (title, title_ru, year, description)
+            VALUES (?, ?, ?, ?)
+        """, (film['title'], film['title_ru'], film['year'], film['description']))
+    
     film_id = cur.lastrowid
-    conn.commit()
-    conn.close()
+    db_close(conn, cur)
     
     result_film = {
         'id': film_id,
