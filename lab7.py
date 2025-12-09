@@ -34,6 +34,25 @@ def db_close(conn, cur):
     cur.close()
     conn.close()
 
+# ДОБАВЬ ЭТО - создаем таблицу если она не существует
+def init_db():
+    conn, cur = db_connect()
+    
+    # Создаем таблицу films если её нет
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS films (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            title_ru TEXT NOT NULL,
+            year INTEGER NOT NULL,
+            description TEXT NOT NULL
+        )
+    """)
+    
+    db_close(conn, cur)
+
+# Вызываем создание таблицы при импорте модуля
+init_db()
 
 @lab7.route('/lab7/')
 def main():
