@@ -91,26 +91,29 @@ def del_film(id):
     
     conn, cur = db_connect()
     
-    # Проверяем существование фильма
-    if current_app.config.get('DB_TYPE') == 'postgres':
-        cur.execute("SELECT * FROM films WHERE id = %s;", (id,))
-    else:
-        cur.execute("SELECT * FROM films WHERE id = ?;", (id,))
-    
-    film = cur.fetchone()
-    
-    if not film:
+    try:
+        # Проверяем существование фильма
+        if current_app.config.get('DB_TYPE') == 'postgres':
+            cur.execute("SELECT * FROM films WHERE id = %s;", (id,))
+        else:
+            cur.execute("SELECT * FROM films WHERE id = ?;", (id,))
+        
+        film = cur.fetchone()
+        
+        if not film:
+            abort(404, description="Фильм не найден")
+        
+        # Удаляем фильм
+        if current_app.config.get('DB_TYPE') == 'postgres':
+            cur.execute("DELETE FROM films WHERE id = %s;", (id,))
+        else:
+            cur.execute("DELETE FROM films WHERE id = ?;", (id,))
+        
         db_close(conn, cur)
-        abort(404, description="Фильм не найден")
-    
-    # Удаляем фильм
-    if current_app.config.get('DB_TYPE') == 'postgres':
-        cur.execute("DELETE FROM films WHERE id = %s;", (id,))
-    else:
-        cur.execute("DELETE FROM films WHERE id = ?;", (id,))
-    
-    db_close(conn, cur)
-    return '', 204
+        return '', 204
+    except Exception as e:
+        db_close(conn, cur)
+        return jsonify({'description': f'Ошибка при удалении: {str(e)}'}), 500
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
 def put_film(id):
@@ -122,75 +125,72 @@ def put_film(id):
     
     conn, cur = db_connect()
     
-    # Проверяем существование фильма
-    if current_app.config.get('DB_TYPE') == 'postgres':
-        cur.execute("SELECT * FROM films WHERE id = %s;", (id,))
-    else:
-        cur.execute("SELECT * FROM films WHERE id = ?;", (id,))
-    
-    if not cur.fetchone():
-        db_close(conn, cur)
-        abort(404, description="Фильм не найден")
-    
-    film = request.get_json()
-    
-    # Валидация данных
-    if not film.get('title_ru'):
-        db_close(conn, cur)
-        return jsonify({'description': 'Заполните русское название'}), 400
-    
-    if not film.get('title'):
-        film['title'] = film['title_ru']
-    
-    if not film.get('year'):
-        db_close(conn, cur)
-        return jsonify({'description': 'Укажите год'}), 400
-    
     try:
-        year = int(film['year'])
-        current_year = datetime.now().year
-        if year < 1895 or year > current_year:
-            db_close(conn, cur)
-            return jsonify({'description': f'Год должен быть от 1895 до {current_year}'}), 400
-    except ValueError:
+        # Проверяем существование фильма
+        if current_app.config.get('DB_TYPE') == 'postgres':
+            cur.execute("SELECT * FROM films WHERE id = %s;", (id,))
+        else:
+            cur.execute("SELECT * FROM films WHERE id = ?;", (id,))
+        
+        if not cur.fetchone():
+            abort(404, description="Фильм не найден")
+        
+        film = request.get_json()
+        
+        # Валидация данных
+        if not film.get('title_ru'):
+            return jsonify({'description': 'Заполните русское название'}), 400
+        
+        if not film.get('title'):
+            film['title'] = film['title_ru']
+        
+        if not film.get('year'):
+            return jsonify({'description': 'Укажите год'}), 400
+        
+        try:
+            year = int(film['year'])
+            current_year = datetime.now().year
+            if year < 1895 or year > current_year:
+                return jsonify({'description': f'Год должен быть от 1895 до {current_year}'}), 400
+        except ValueError:
+            return jsonify({'description': 'Год должен быть числом'}), 400
+        
+        if not film.get('description'):
+            return jsonify({'description': 'Заполните описание'}), 400
+        
+        if len(film.get('description', '')) > 2000:
+            return jsonify({'description': 'Описание должно быть не более 2000 символов'}), 400
+        
+        # Получаем ID пользователя
+        if current_app.config.get('DB_TYPE') == 'postgres':
+            cur.execute("SELECT id FROM users WHERE login = %s;", (login,))
+        else:
+            cur.execute("SELECT id FROM users WHERE login = ?;", (login,))
+        
+        user = cur.fetchone()
+        user_id = user['id'] if user else None
+        
+        # Обновляем фильм
+        if current_app.config.get('DB_TYPE') == 'postgres':
+            cur.execute("""
+                UPDATE films 
+                SET title = %s, title_ru = %s, year = %s, description = %s, user_id = %s 
+                WHERE id = %s;
+            """, (film['title'], film['title_ru'], film['year'], film['description'], user_id, id))
+        else:
+            cur.execute("""
+                UPDATE films 
+                SET title = ?, title_ru = ?, year = ?, description = ?, user_id = ? 
+                WHERE id = ?;
+            """, (film['title'], film['title_ru'], film['year'], film['description'], user_id, id))
+        
         db_close(conn, cur)
-        return jsonify({'description': 'Год должен быть числом'}), 400
-    
-    if not film.get('description'):
+        
+        # Возвращаем обновленный фильм
+        return get_film(id)
+    except Exception as e:
         db_close(conn, cur)
-        return jsonify({'description': 'Заполните описание'}), 400
-    
-    if len(film.get('description', '')) > 2000:
-        db_close(conn, cur)
-        return jsonify({'description': 'Описание должно быть не более 2000 символов'}), 400
-    
-    # Получаем ID пользователя
-    if current_app.config.get('DB_TYPE') == 'postgres':
-        cur.execute("SELECT id FROM users WHERE login = %s;", (login,))
-    else:
-        cur.execute("SELECT id FROM users WHERE login = ?;", (login,))
-    
-    user = cur.fetchone()
-    user_id = user['id'] if user else None
-    
-    # Обновляем фильм
-    if current_app.config.get('DB_TYPE') == 'postgres':
-        cur.execute("""
-            UPDATE films 
-            SET title = %s, title_ru = %s, year = %s, description = %s, user_id = %s 
-            WHERE id = %s;
-        """, (film['title'], film['title_ru'], film['year'], film['description'], user_id, id))
-    else:
-        cur.execute("""
-            UPDATE films 
-            SET title = ?, title_ru = ?, year = ?, description = ?, user_id = ? 
-            WHERE id = ?;
-        """, (film['title'], film['title_ru'], film['year'], film['description'], user_id, id))
-    
-    db_close(conn, cur)
-    
-    # Возвращаем обновленный фильм
-    return get_film(id)
+        return jsonify({'description': f'Ошибка при обновлении: {str(e)}'}), 500
 
 @lab7.route('/lab7/rest-api/films/', methods=['POST'])
 def add_film():
@@ -202,105 +202,106 @@ def add_film():
     
     conn, cur = db_connect()
     
-    film = request.get_json()
-    
-    # Валидация данных
-    if not film.get('title_ru'):
-        db_close(conn, cur)
-        return jsonify({'description': 'Заполните русское название'}), 400
-    
-    if not film.get('title'):
-        film['title'] = film['title_ru']
-    
-    if not film.get('year'):
-        db_close(conn, cur)
-        return jsonify({'description': 'Укажите год'}), 400
-    
     try:
-        year = int(film['year'])
-        current_year = datetime.now().year
-        if year < 1895 or year > current_year:
-            db_close(conn, cur)
-            return jsonify({'description': f'Год должен быть от 1895 до {current_year}'}), 400
-    except ValueError:
-        db_close(conn, cur)
-        return jsonify({'description': 'Год должен быть числом'}), 400
-    
-    if not film.get('description'):
-        db_close(conn, cur)
-        return jsonify({'description': 'Заполните описание'}), 400
-    
-    if len(film.get('description', '')) > 2000:
-        db_close(conn, cur)
-        return jsonify({'description': 'Описание должно быть не более 2000 символов'}), 400
-    
-    # Получаем ID пользователя
-    if current_app.config.get('DB_TYPE') == 'postgres':
-        cur.execute("SELECT id FROM users WHERE login = %s;", (login,))
-    else:
-        cur.execute("SELECT id FROM users WHERE login = ?;", (login,))
-    
-    user = cur.fetchone()
-    user_id = user['id'] if user else None
-    
-    # Добавляем фильм в БД
-    if current_app.config.get('DB_TYPE') == 'postgres':
-        cur.execute("""
-            INSERT INTO films (title, title_ru, year, description, user_id) 
-            VALUES (%s, %s, %s, %s, %s) RETURNING id;
-        """, (film['title'], film['title_ru'], film['year'], film['description'], user_id))
+        film = request.get_json()
         
-        new_id = cur.fetchone()['id']
-    else:
-        cur.execute("""
-            INSERT INTO films (title, title_ru, year, description, user_id) 
-            VALUES (?, ?, ?, ?, ?);
-        """, (film['title'], film['title_ru'], film['year'], film['description'], user_id))
+        # Валидация данных
+        if not film.get('title_ru'):
+            return jsonify({'description': 'Заполните русское название'}), 400
         
-        new_id = cur.lastrowid
-    
-    db_close(conn, cur)
-    
-    # Возвращаем ID нового фильма
-    return jsonify({'id': new_id}), 201
+        if not film.get('title'):
+            film['title'] = film['title_ru']
+        
+        if not film.get('year'):
+            return jsonify({'description': 'Укажите год'}), 400
+        
+        try:
+            year = int(film['year'])
+            current_year = datetime.now().year
+            if year < 1895 or year > current_year:
+                return jsonify({'description': f'Год должен быть от 1895 до {current_year}'}), 400
+        except ValueError:
+            return jsonify({'description': 'Год должен быть числом'}), 400
+        
+        if not film.get('description'):
+            return jsonify({'description': 'Заполните описание'}), 400
+        
+        if len(film.get('description', '')) > 2000:
+            return jsonify({'description': 'Описание должно быть не более 2000 символов'}), 400
+        
+        # Получаем ID пользователя
+        if current_app.config.get('DB_TYPE') == 'postgres':
+            cur.execute("SELECT id FROM users WHERE login = %s;", (login,))
+        else:
+            cur.execute("SELECT id FROM users WHERE login = ?;", (login,))
+        
+        user = cur.fetchone()
+        user_id = user['id'] if user else None
+        
+        # Добавляем фильм в БД
+        if current_app.config.get('DB_TYPE') == 'postgres':
+            cur.execute("""
+                INSERT INTO films (title, title_ru, year, description, user_id) 
+                VALUES (%s, %s, %s, %s, %s) RETURNING id;
+            """, (film['title'], film['title_ru'], film['year'], film['description'], user_id))
+            
+            new_id = cur.fetchone()['id']
+        else:
+            cur.execute("""
+                INSERT INTO films (title, title_ru, year, description, user_id) 
+                VALUES (?, ?, ?, ?, ?);
+            """, (film['title'], film['title_ru'], film['year'], film['description'], user_id))
+            
+            new_id = cur.lastrowid
+        
+        db_close(conn, cur)
+        
+        # Возвращаем ID нового фильма
+        return jsonify({'id': new_id}), 201
+    except Exception as e:
+        db_close(conn, cur)
+        return jsonify({'description': f'Ошибка при добавлении: {str(e)}'}), 500
 
 @lab7.route('/lab7/rest-api/films/user/<login>', methods=['GET'])
 def get_user_films(login):
     """Получение фильмов, добавленных конкретным пользователем"""
     conn, cur = db_connect()
     
-    # Получаем ID пользователя
-    if current_app.config.get('DB_TYPE') == 'postgres':
-        cur.execute("SELECT id FROM users WHERE login = %s;", (login,))
-    else:
-        cur.execute("SELECT id FROM users WHERE login = ?;", (login,))
-    
-    user = cur.fetchone()
-    
-    if not user:
-        db_close(conn, cur)
-        return jsonify([])
-    
-    user_id = user['id']
-    
-    # Получаем фильмы пользователя
-    if current_app.config.get('DB_TYPE') == 'postgres':
-        cur.execute("SELECT * FROM films WHERE user_id = %s ORDER BY id;", (user_id,))
-    else:
-        cur.execute("SELECT * FROM films WHERE user_id = ? ORDER BY id;", (user_id,))
-    
-    films = cur.fetchall()
-    
-    # Конвертируем результат в список словарей
-    films_list = []
-    for film in films:
-        if isinstance(film, dict):
-            films_list.append(film)
+    try:
+        # Получаем ID пользователя
+        if current_app.config.get('DB_TYPE') == 'postgres':
+            cur.execute("SELECT id FROM users WHERE login = %s;", (login,))
         else:
-            films_list.append(dict(film))
-    
-    db_close(conn, cur)
-    return jsonify(films_list)
+            cur.execute("SELECT id FROM users WHERE login = ?;", (login,))
+        
+        user = cur.fetchone()
+        
+        if not user:
+            return jsonify([])
+        
+        user_id = user['id']
+        
+        # Получаем фильмы пользователя
+        if current_app.config.get('DB_TYPE') == 'postgres':
+            cur.execute("SELECT * FROM films WHERE user_id = %s ORDER BY id;", (user_id,))
+        else:
+            cur.execute("SELECT * FROM films WHERE user_id = ? ORDER BY id;", (user_id,))
+        
+        films = cur.fetchall()
+        
+        # Конвертируем результат в список словарей
+        films_list = []
+        for film in films:
+            if isinstance(film, dict):
+                films_list.append(film)
+            else:
+                films_list.append(dict(film))
+        
+        return jsonify(films_list)
+    except Exception as e:
+        return jsonify({'description': f'Ошибка: {str(e)}'}), 500
+    finally:
+        db_close(conn, cur)
 
 @lab7.route('/lab7/rest-api/films/my', methods=['GET'])
 def get_my_films():
