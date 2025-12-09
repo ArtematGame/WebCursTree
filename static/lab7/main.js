@@ -1,5 +1,3 @@
-[file name]: main.js
-[file content begin]
 function fillFilmList() {
     fetch(`/lab7/rest-api/films/`)
     .then(function (data) {
