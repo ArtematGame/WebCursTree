@@ -130,4 +130,11 @@ def add_film():
     conn.commit()
     conn.close()
     
-    return jsonify({'id': film_id, **film})
+    result_film = {
+        'id': film_id,
+        'title': film['title'],
+        'title_ru': film['title_ru'],
+        'year': film['year'],
+        'description': film['description']
+    }
+    return jsonify(result_film)
