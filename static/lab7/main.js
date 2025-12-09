@@ -6,16 +6,25 @@ function fillFilmList() {
     .then(function (films) {
         let tbody = document.getElementById('film-list');
         tbody.innerHTML = '';
-        for(let i = 0; i<films.length; i++) {
+        for(let i = 0; i < films.length; i++) {
             let tr = document.createElement('tr');
 
-            let tdTitle = document.createElement('td');
-            let tdTitleRus = document.createElement('td');
+            let tdTitleRu = document.createElement('td');  // Русское название
+            let tdTitleOrig = document.createElement('td');  // Оригинальное название
             let tdYear = document.createElement('td');
             let tdActions = document.createElement('td');
 
-            tdTitle.innerText = films[i].title == films[i].title_ru ? '' : films[i].title;
-            tdTitleRus.innerText = films[i].title_ru;
+            // ПЕРВЫЙ столбец: русское название
+            tdTitleRu.innerText = films[i].title_ru;
+            
+            // ВТОРОЙ столбец: оригинальное название
+            // Всегда показываем оригинальное название, даже если оно совпадает с русским
+            tdTitleOrig.innerText = films[i].title;
+            
+            // Добавляем стиль курсива и серый цвет
+            tdTitleOrig.style.fontStyle = 'italic';
+            tdTitleOrig.style.color = '#666';
+            
             tdYear.innerText = films[i].year;
 
             let editButton = document.createElement('button');
@@ -33,8 +42,9 @@ function fillFilmList() {
             tdActions.append(editButton);
             tdActions.append(delButton);  
 
-            tr.append(tdTitle);
-            tr.append(tdTitleRus);
+            // Порядок: русское, оригинальное, год, действия
+            tr.append(tdTitleRu);     // Русское название ПЕРВЫМ
+            tr.append(tdTitleOrig);   // Оригинальное название ВТОРЫМ
             tr.append(tdYear);
             tr.append(tdActions);
 
@@ -70,6 +80,8 @@ function addFilm() {
     document.getElementById('title-ru').value = '';
     document.getElementById('year').value = '';
     document.getElementById('description').value = '';
+    // Очищаем ошибку при открытии модального окна
+    document.getElementById('description-error').innerText = '';
     showModal();
 }
 
@@ -82,7 +94,10 @@ function sendFilm() {
         description: document.getElementById('description').value
     }
 
-    const url = '/lab7/rest-api/films/';
+    // Очищаем ошибку перед отправкой
+    document.getElementById('description-error').innerText = '';
+
+    const url = id === '' ? '/lab7/rest-api/films/' : `/lab7/rest-api/films/${id}`;
     const method = id === '' ? 'POST' : 'PUT';
 
     fetch(url, {
@@ -101,6 +116,23 @@ function sendFilm() {
     .then(function (errors) {
         if(errors.description)
             document.getElementById('description-error').innerText = errors.description;
+    });
+}
+
+function editFilm(id) {
+    fetch(`/lab7/rest-api/films/${id}`)
+    .then(function (data) {
+        return  data.json();
+    })
+    .then(function (film) {
+        document.getElementById('id').value = id;
+        document.getElementById('title').value = film.title;
+        document.getElementById('title-ru').value = film.title_ru;
+        document.getElementById('year').value = film.year;
+        document.getElementById('description').value = film.description;
+        // Очищаем ошибку при открытии модального окна для редактирования
+        document.getElementById('description-error').innerText = '';
+        showModal();
     });
 }
 

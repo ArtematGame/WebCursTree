@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify, abort
+from datetime import datetime
 
 lab7 = Blueprint('lab7', __name__)
 
@@ -58,22 +59,72 @@ def del_film(id):
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
 def put_film(id):
-    # Проверка на принадлежность ID корректному диапазону
     if id < 0 or id >= len(films):
         abort(404, description="Фильм не найден")
     
     film = request.get_json()
-    if film['description'] == '':
+    
+    # Проверка русского названия
+    if not film.get('title_ru'):
+        return jsonify({'description': 'Заполните русское название'}), 400
+    
+    # Если оригинальное пустое - копируем русское
+    if not film.get('title'):
+        film['title'] = film['title_ru']
+    
+    # Проверка года
+    if not film.get('year'):
+        return jsonify({'description': 'Укажите год'}), 400
+    
+    try:
+        year = int(film['year'])
+        current_year = datetime.now().year
+        if year < 1895 or year > current_year:
+            return jsonify({'description': f'Год должен быть от 1895 до {current_year}'}), 400
+    except ValueError:
+        return jsonify({'description': 'Год должен быть числом'}), 400
+    
+    # Проверка описания (как было)
+    if not film.get('description'):
         return jsonify({'description': 'Заполните описание'}), 400
+    
+    if len(film.get('description', '')) > 2000:
+        return jsonify({'description': 'Описание должно быть не более 2000 символов'}), 400
+    
     films[id] = film
-    return jsonify(films[id])  # Используем jsonify
+    return jsonify(films[id])
 
 @lab7.route('/lab7/rest-api/films/', methods=['POST'])
 def add_film():
     film = request.get_json()
-    if film['description'] == '':
+    
+    # Проверка русского названия
+    if not film.get('title_ru'):
+        return jsonify({'description': 'Заполните русское название'}), 400
+    
+    # Если оригинальное пустое - копируем русское
+    if not film.get('title'):
+        film['title'] = film['title_ru']
+    
+    # Проверка года
+    if not film.get('year'):
+        return jsonify({'description': 'Укажите год'}), 400
+    
+    try:
+        year = int(film['year'])
+        current_year = datetime.now().year
+        if year < 1895 or year > current_year:
+            return jsonify({'description': f'Год должен быть от 1895 до {current_year}'}), 400
+    except ValueError:
+        return jsonify({'description': 'Год должен быть числом'}), 400
+    
+    # Проверка описания
+    if not film.get('description'):
         return jsonify({'description': 'Заполните описание'}), 400
+    
+    if len(film.get('description', '')) > 2000:
+        return jsonify({'description': 'Описание должно быть не более 2000 символов'}), 400
+    
     films.append(film)
-    # Фильмы вставляются в конец списка, поэтому возвращаем новую длину списка за вычетом единицы
-    return jsonify(len(films) - 1)  # Используем jsonify
+    return jsonify(len(films) - 1)
 
