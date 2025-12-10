@@ -23,7 +23,7 @@ def db_connect():
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
 
-    return conn, cur  # Возвращаем ДВА значения!
+    return conn, cur
 
 def db_close(conn, cur):
     conn.commit()
@@ -36,15 +36,15 @@ def main():
 
 @lab7.route('/lab7/rest-api/films/', methods=['GET'])
 def get_films():
-    conn, cur = db_connect()  # Получаем ДВА значения!
+    conn, cur = db_connect()
     cur.execute("SELECT * FROM films")
     films = [dict(row) for row in cur.fetchall()]
-    db_close(conn, cur)  # Используем правильную функцию закрытия
+    db_close(conn, cur)
     return jsonify(films)
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
 def get_film(id):
-    conn, cur = db_connect()  # Получаем ДВА значения!
+    conn, cur = db_connect()
     
     if current_app.config['DB_TYPE'] == 'postgres':
         cur.execute("SELECT * FROM films WHERE id = %s", (id,))
@@ -52,7 +52,7 @@ def get_film(id):
         cur.execute("SELECT * FROM films WHERE id = ?", (id,))
     
     film = cur.fetchone()
-    db_close(conn, cur)  # Используем правильную функцию закрытия
+    db_close(conn, cur)
     
     if not film:
         abort(404, description="Фильм не найден")
@@ -60,14 +60,14 @@ def get_film(id):
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
 def del_film(id):
-    conn, cur = db_connect()  # Получаем ДВА значения!
+    conn, cur = db_connect()
     
     if current_app.config['DB_TYPE'] == 'postgres':
         cur.execute("DELETE FROM films WHERE id = %s", (id,))
     else:
         cur.execute("DELETE FROM films WHERE id = ?", (id,))
     
-    db_close(conn, cur)  # Используем правильную функцию закрытия
+    db_close(conn, cur)
     return '', 204
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
@@ -101,7 +101,7 @@ def put_film(id):
     if len(film.get('description', '')) > 2000:
         return jsonify({'description': 'Описание должно быть не более 2000 символов'}), 400
     
-    conn, cur = db_connect()  # Получаем ДВА значения!
+    conn, cur = db_connect()
     
     if current_app.config['DB_TYPE'] == 'postgres':
         cur.execute("""
@@ -116,7 +116,7 @@ def put_film(id):
             WHERE id = ?
         """, (film['title'], film['title_ru'], film['year'], film['description'], id))
     
-    db_close(conn, cur)  # Используем правильную функцию закрытия
+    db_close(conn, cur)
     return jsonify(film)
 
 @lab7.route('/lab7/rest-api/films/', methods=['POST'])
@@ -150,7 +150,7 @@ def add_film():
     if len(film.get('description', '')) > 2000:
         return jsonify({'description': 'Описание должно быть не более 2000 символов'}), 400
     
-    conn, cur = db_connect()  # Получаем ДВА значения!
+    conn, cur = db_connect()
     
     if current_app.config['DB_TYPE'] == 'postgres':
         cur.execute("""
@@ -164,7 +164,7 @@ def add_film():
         """, (film['title'], film['title_ru'], film['year'], film['description']))
     
     film_id = cur.lastrowid
-    db_close(conn, cur)  # Используем правильную функцию закрытия
+    db_close(conn, cur)
     
     result_film = {
         'id': film_id,
