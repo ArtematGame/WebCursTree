@@ -1,11 +1,13 @@
 from flask import Flask, url_for, request, redirect, abort, render_template
 import datetime
 import os
+import secrets
 from flask_sqlalchemy import SQLAlchemy
 from db import db
 from os import path
 from db.models import users
 from flask_login import LoginManager
+
 
 from lab1 import lab1
 from lab2 import lab2
@@ -26,7 +28,7 @@ login_manager.init_app(app)
 def load_users(login_id):
     return users.query.get(int(login_id))
 
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'secret-secret-key-123456789')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_urlsafe(32))
 app.config['DB_TYPE'] = os.getenv('DB_TYPE', 'postgres')
 
 if app.config['DB_TYPE'] == 'postgres':
