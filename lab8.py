@@ -93,6 +93,7 @@ def create_article():
     
     title = request.form.get('title')
     article_text = request.form.get('article_text')
+    is_public = True if request.form.get('is_public') else False  # ДОБАВЬТЕ ЭТУ СТРОЧКУ
     
     if not title:
         return render_template('lab8/create.html',
@@ -108,7 +109,7 @@ def create_article():
         title=title,
         article_text=article_text,
         is_favorite=False,
-        is_public=False,
+        is_public=is_public,  # ИЗМЕНИТЕ ЭТУ СТРОЧКУ (было False)
         likes=0
     )
     
@@ -171,3 +172,9 @@ def delete_article(article_id):
 def logout():
     logout_user()
     return redirect('/lab8/')
+
+@lab8.route('/lab8/public')
+def public_articles():
+    # Публичные статьи для всех пользователей
+    public_articles_list = articles.query.filter_by(is_public=True).all()
+    return render_template('lab8/public_articles.html', articles=public_articles_list)
