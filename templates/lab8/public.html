@@ -4,18 +4,26 @@
 
 {% block main %}
     <h1>Публичные статьи</h1>
+    <form method="get" style="margin-bottom: 20px;">
+        <label>
+            Поиск: 
+            <input type="text" name="search" value="{{ search or '' }}">
+        </label>
+        <button type="submit">Найти</button>
+        {% if search %}
+            <a href="/lab8/public/">Показать все</a>
+        {% endif %}
+    </form>
 
-    {% if articles %}
-        {% for article in articles %}
-            <div class="article">
-                <h2>{{ article.title }}</h2>
-                <p>{{ article.article_text }}</p>
-            </div>
-            <hr>
-        {% endfor %}
-    {% else %}
-        <p>Нет публичных статей.</p>
-    {% endif %}
+    {% for article in articles %}
+        <h2>{{ article['title'] }}</h2>
+        <div>
+            <p>{{ article['article_text'] }}</p>
+        </div>
+    {% endfor %}
 
-    <a href="/lab8/">Назад</a>
+    <div>
+      <a href="/lab8/">Назад</a>  
+    </div>
+    
 {% endblock %}

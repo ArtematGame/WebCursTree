@@ -4,7 +4,16 @@
 
 {% block main %}
     <h1>Мои статьи</h1>
-    
+    <form method="get" style="margin-bottom: 20px;">
+        <label>
+            Поиск: 
+            <input type="text" name="search" value="{{ search or '' }}">
+        </label>
+        <button type="submit">Найти</button>
+        {% if search %}
+            <a href="/lab8/articles/">Показать все</a>
+        {% endif %}
+    </form>
     <button onclick="location.href='/lab8/create/'">Создать статью</button>
     
     {% if articles %}

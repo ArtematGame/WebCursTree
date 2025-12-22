@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from db import db
 from db.models import users, articles
 from flask_login import login_user, login_required, current_user, logout_user
+from sqlalchemy import or_
 
 lab8 = Blueprint('lab8', __name__)
 
@@ -79,16 +80,42 @@ def login():
 
 @lab8.route('/lab8/public/')
 def public_articles():
-    # Публичные статьи для всех пользователей
-    public_articles_list = articles.query.filter_by(is_public=True).all()
-    return render_template('lab8/public.html', articles=public_articles_list)
+    search = request.args.get('search', '').strip() 
+    
+    base_query = articles.query.filter_by(is_public=True)
+    
+    if search:
+        search_filter = or_(
+            articles.title.ilike(f'%{search}%'),
+            articles.article_text.ilike(f'%{search}%')
+        )
+        public_articles_list = base_query.filter(search_filter).all()
+    else:
+        public_articles_list = base_query.all()
+    
+    return render_template('lab8/public.html', 
+                          articles=public_articles_list, 
+                          search=search)
 
 @lab8.route('/lab8/articles/')
-@login_required  # Декоратор Flask-Login (методичка стр. 19)
+@login_required
 def article_list():
-    # Получаем статьи текущего пользователя через ORM
-    user_articles = articles.query.filter_by(login_id=current_user.id).all()
-    return render_template('lab8/articles.html', articles=user_articles)
+    search = request.args.get('search', '').strip()
+    
+    base_query = articles.query.filter_by(login_id=current_user.id)
+    
+    if search:
+        search_filter = or_(
+            articles.title.ilike(f'%{search}%'),
+            articles.article_text.ilike(f'%{search}%')
+        )
+        user_articles = base_query.filter(search_filter).all()
+    else:
+        user_articles = base_query.all()
+    
+    return render_template('lab8/articles.html', 
+                          articles=user_articles, 
+                          search=search) 
 
 
 @lab8.route('/lab8/create/', methods=['GET', 'POST'])
@@ -100,7 +127,7 @@ def create_article():
     
     title = request.form.get('title')
     article_text = request.form.get('article_text')
-    is_public = True if request.form.get('is_public') else False  # ДОБАВЬТЕ ЭТУ СТРОЧКУ
+    is_public = True if request.form.get('is_public') else False
     
     if not title:
         return render_template('lab8/create.html',
@@ -116,7 +143,7 @@ def create_article():
         title=title,
         article_text=article_text,
         is_favorite=False,
-        is_public=is_public,  # ИЗМЕНИТЕ ЭТУ СТРОЧКУ (было False)
+        is_public=True,
         likes=0
     )
     
