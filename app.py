@@ -26,7 +26,7 @@ login_manager.init_app(app)
 def load_users(login_id):
     return users.query.get(int(login_id))
 
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'super-secret-key')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'supersecretkey1234567890')
 app.config['DB_TYPE'] = os.getenv('DB_TYPE', 'postgres')
 
 if app.config['DB_TYPE'] == 'postgres':
