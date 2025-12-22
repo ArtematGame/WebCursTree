@@ -177,4 +177,4 @@ def logout():
 def public_articles():
     # Публичные статьи для всех пользователей
     public_articles_list = articles.query.filter_by(is_public=True).all()
-    return render_template('lab8/public_articles.html', articles=public_articles_list)
+    return render_template('lab8/public.html', articles=public_articles_list)
