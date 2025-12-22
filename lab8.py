@@ -20,7 +20,7 @@ def register():
     login_form = request.form.get('login')
     password_form = request.form.get('password')
 
-    # Проверка на пустые значения (Задание 2 из методички)
+    # Проверка на пустые значения
     if not login_form:
         return render_template('lab8/register.html',
                                error='Логин не может быть пустым')
@@ -29,7 +29,7 @@ def register():
         return render_template('lab8/register.html',
                                error='Пароль не может быть пустым')
 
-    # Поиск пользователя через ORM (методичка стр. 13)
+    # Поиск пользователя через ORM
     login_exists = users.query.filter_by(login=login_form).first()
     if login_exists:
         return render_template('lab8/register.html',
@@ -78,16 +78,14 @@ def login():
                            error='Ошибка входа: логин и/или пароль неверны')
 
 @lab8.route('/lab8/articles/')
-@login_required  # Декоратор Flask-Login (методичка стр. 19)
+@login_required
 def article_list():
-    # Получаем статьи текущего пользователя через ORM
     user_articles = articles.query.filter_by(login_id=current_user.id).all()
     return render_template('lab8/articles.html', articles=user_articles)
 
 @lab8.route('/lab8/create/', methods=['GET', 'POST'])
 @login_required
 def create_article():
-    # ЗАДАНИЕ 4: Создание статьи
     if request.method == 'GET':
         return render_template('lab8/create.html')
     
@@ -102,7 +100,6 @@ def create_article():
         return render_template('lab8/create.html',
                                error='Текст статьи не может быть пустым')
     
-    # Создание статьи через ORM
     new_article = articles(
         login_id=current_user.id,
         title=title,
@@ -120,13 +117,9 @@ def create_article():
 @lab8.route('/lab8/edit/<int:article_id>', methods=['GET', 'POST'])
 @login_required
 def edit_article(article_id):
-    # ЗАДАНИЕ 5: Редактирование статьи
-    # Получение статьи через ORM
     article = articles.query.get_or_404(article_id)
-    
-    # Проверяем, принадлежит ли статья текущему пользователю
     if article.login_id != current_user.id:
-        abort(403)  # Запрещено
+        abort(403)
     
     if request.method == 'GET':
         return render_template('lab8/edit.html', article=article)
@@ -153,12 +146,10 @@ def edit_article(article_id):
 @lab8.route('/lab8/delete/<int:article_id>', methods=['POST'])
 @login_required
 def delete_article(article_id):
-    # ЗАДАНИЕ 6: Удаление статьи
     article = articles.query.get_or_404(article_id)
-    
     # Проверяем, принадлежит ли статья текущему пользователю
     if article.login_id != current_user.id:
-        abort(403)  # Запрещено
+        abort(403)
     
     # Удаление статьи через ORM
     db.session.delete(article)

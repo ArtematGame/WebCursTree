@@ -23,7 +23,7 @@ def db_connect():
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
 
-    return conn, cur  # Возвращаем ДВА значения!
+    return conn, cur
 
 def db_close(conn, cur):
     conn.commit()
