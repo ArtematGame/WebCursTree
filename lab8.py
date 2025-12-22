@@ -77,12 +77,19 @@ def login():
     return render_template('lab8/login.html',
                            error='Ошибка входа: логин и/или пароль неверны')
 
+@lab8.route('/lab8/public/')
+def public_articles():
+    # Публичные статьи для всех пользователей
+    public_articles_list = articles.query.filter_by(is_public=True).all()
+    return render_template('lab8/public.html', articles=public_articles_list)
+
 @lab8.route('/lab8/articles/')
 @login_required  # Декоратор Flask-Login (методичка стр. 19)
 def article_list():
     # Получаем статьи текущего пользователя через ORM
     user_articles = articles.query.filter_by(login_id=current_user.id).all()
     return render_template('lab8/articles.html', articles=user_articles)
+
 
 @lab8.route('/lab8/create/', methods=['GET', 'POST'])
 @login_required
@@ -173,8 +180,3 @@ def logout():
     logout_user()
     return redirect('/lab8/')
 
-@lab8.route('/lab8/public')
-def public_articles():
-    # Публичные статьи для всех пользователей
-    public_articles_list = articles.query.filter_by(is_public=True).all()
-    return render_template('lab8/public.html', articles=public_articles_list)
