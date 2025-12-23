@@ -104,6 +104,7 @@ def open_box():
         "success": True,
         "message": gift["message"],
         "image": gift["image"],
+        "card_image": gift["card_image"],
         "opened_count": len(user_opened),
         "remaining": 10 - len(opened_boxes_global),
         "box_id": box_id
