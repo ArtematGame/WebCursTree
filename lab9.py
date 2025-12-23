@@ -4,6 +4,7 @@ from psycopg2.extras import RealDictCursor
 import sqlite3
 from werkzeug.security import check_password_hash, generate_password_hash
 from os import path
+from datetime import datetime
 
 lab9 = Blueprint('lab9', __name__)
 
@@ -44,21 +45,37 @@ gifts = [
     {"id": 9, "message": "Весёлых праздников!", "image": "/static/lab9/gift10.png", "top": 20, "left": 85}
 ]
 
-# ПРОСТОЙ вариант: храним в памяти сервера (не в БД)
-opened_boxes_global = set()  # ID открытых коробок для всех пользователей
-
 @lab9.route('/lab9/')
 def main():
     # Инициализация сессии для подарков
     if 'opened_boxes' not in session:
         session['opened_boxes'] = []
     
-    # Синхронизируем с глобальным хранилищем
-    user_opened = [box_id for box_id in session['opened_boxes'] if box_id in opened_boxes_global]
-    session['opened_boxes'] = user_opened
+    # Получаем открытые коробки пользователя из БД
+    conn, cur = db_connect()
+    user_opened = []
     
-    opened_count = len(session['opened_boxes'])
-    remaining = 10 - len(opened_boxes_global)
+    if session.get('login'):
+        if current_app.config['DB_TYPE'] == 'postgres':
+            cur.execute("SELECT box_id FROM opened_boxes WHERE user_id=%s;", (session['login'],))
+        else:
+            cur.execute("SELECT box_id FROM opened_boxes WHERE user_id=?;", (session['login'],))
+        
+        user_opened = [row['box_id'] for row in cur.fetchall()]
+        session['opened_boxes'] = user_opened
+    
+    # Получаем все открытые коробки в системе
+    if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("SELECT DISTINCT box_id FROM opened_boxes;")
+    else:
+        cur.execute("SELECT DISTINCT box_id FROM opened_boxes;")
+    
+    all_opened = [row['box_id'] for row in cur.fetchall()]
+    
+    db_close(conn, cur)
+    
+    opened_count = len(user_opened)
+    remaining = 10 - len(all_opened)
     
     return render_template('lab9/index.html',
                          login=session.get('login'),
@@ -77,23 +94,42 @@ def open_box():
     if box_id is None or not isinstance(box_id, int) or box_id < 0 or box_id > 9:
         return jsonify({"error": "Неверный ID коробки"}), 400
     
-    # Проверяем, не открыта ли уже эта коробка
-    if box_id in opened_boxes_global:
+    conn, cur = db_connect()
+    
+    # Проверяем, не открыта ли уже эта коробка (в системе)
+    if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("SELECT * FROM opened_boxes WHERE box_id=%s;", (box_id,))
+    else:
+        cur.execute("SELECT * FROM opened_boxes WHERE box_id=?;", (box_id,))
+    
+    if cur.fetchone():
+        db_close(conn, cur)
         return jsonify({
             "error": "Эта коробка уже пуста! Подарок уже забрали.",
-            "remaining": 10 - len(opened_boxes_global)
+            "remaining": 10 - get_remaining_count()
         }), 400
     
     # Проверяем, не открыл ли уже пользователь 3 коробки
     user_opened = session.get('opened_boxes', [])
     if len(user_opened) >= 3:
+        db_close(conn, cur)
         return jsonify({
             "error": "Вы уже открыли 3 коробки! Больше нельзя.",
-            "remaining": 10 - len(opened_boxes_global)
+            "remaining": 10 - get_remaining_count()
         }), 400
     
-    # Открываем коробку
-    opened_boxes_global.add(box_id)
+    # Открываем коробку - сохраняем в БД
+    user_id = session.get('login', 'guest')
+    if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("INSERT INTO opened_boxes (box_id, user_id) VALUES (%s, %s);", 
+                    (box_id, user_id))
+    else:
+        cur.execute("INSERT INTO opened_boxes (box_id, user_id) VALUES (?, ?);", 
+                    (box_id, user_id))
+    
+    db_close(conn, cur)
+    
+    # Обновляем сессию пользователя
     user_opened.append(box_id)
     session['opened_boxes'] = user_opened
     
@@ -105,19 +141,39 @@ def open_box():
         "message": gift["message"],
         "image": gift["image"],
         "opened_count": len(user_opened),
-        "remaining": 10 - len(opened_boxes_global),
+        "remaining": 10 - get_remaining_count(),
         "box_id": box_id
     })
+
+def get_remaining_count():
+    # Получить количество открытых коробок в системе
+    conn, cur = db_connect()
+    
+    if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("SELECT COUNT(DISTINCT box_id) as count FROM opened_boxes;")
+    else:
+        cur.execute("SELECT COUNT(DISTINCT box_id) as count FROM opened_boxes;")
+    
+    result = cur.fetchone()
+    count = result['count'] if result else 0
+    
+    db_close(conn, cur)
+    return count
 
 @lab9.route('/lab9/reset_boxes', methods=['POST'])
 def reset_boxes():
     if not session.get('login'):
         return jsonify({"error": "Только для авторизованных пользователей!"}), 403
     
-    global opened_boxes_global
+    conn, cur = db_connect()
     
-    # Очищаем глобальное хранилище
-    opened_boxes_global.clear()
+    # Очищаем таблицу opened_boxes
+    if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("DELETE FROM opened_boxes;")
+    else:
+        cur.execute("DELETE FROM opened_boxes;")
+    
+    db_close(conn, cur)
     
     # Очищаем сессию пользователя
     session['opened_boxes'] = []
@@ -129,14 +185,27 @@ def reset_boxes():
 
 @lab9.route('/lab9/check_boxes')
 def check_boxes():
-    """Получить информацию о текущем состоянии коробок"""
+    # Получить информацию о текущем состоянии коробок
+    conn, cur = db_connect()
+    
+    # Все открытые коробки в системе
+    if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("SELECT DISTINCT box_id FROM opened_boxes;")
+    else:
+        cur.execute("SELECT DISTINCT box_id FROM opened_boxes;")
+    
+    global_opened = [row['box_id'] for row in cur.fetchall()]
+    
+    # Коробки, открытые текущим пользователем
     user_opened = session.get('opened_boxes', [])
     
+    db_close(conn, cur)
+    
     return jsonify({
-        "global_opened": list(opened_boxes_global),
+        "global_opened": global_opened,
         "user_opened": user_opened,
         "user_opened_count": len(user_opened),
-        "global_remaining": 10 - len(opened_boxes_global)
+        "global_remaining": 10 - len(global_opened)
     })
 
 @lab9.route('/lab9/register', methods=['GET', 'POST'])
