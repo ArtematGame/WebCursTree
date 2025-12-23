@@ -32,16 +32,16 @@ def db_close(conn, cur):
 
 # Данные для подарков (10 уникальных)
 gifts = [
-    {"id": 0, "message": "С Новым годом! Желаю счастья!", "image": "/static/lab9/gift1.png", "top": 15, "left": 10},
-    {"id": 1, "message": "Удачи в новом году!", "image": "/static/lab9/gift2.png", "top": 25, "left": 70},
-    {"id": 2, "message": "Здоровья и благополучия!", "image": "/static/lab9/gift3.png", "top": 40, "left": 20},
-    {"id": 3, "message": "Исполнения всех желаний!", "image": "/static/lab9/gift4.png", "top": 10, "left": 50},
-    {"id": 4, "message": "Мира и добра!", "image": "/static/lab9/gift5.png", "top": 60, "left": 80},
-    {"id": 5, "message": "Творческих успехов!", "image": "/static/lab9/gift6.png", "top": 70, "left": 30},
-    {"id": 6, "message": "Финансового процветания!", "image": "/static/lab9/gift7.png", "top": 35, "left": 60},
-    {"id": 7, "message": "Любви и гармонии!", "image": "/static/lab9/gift8.png", "top": 65, "left": 15},
-    {"id": 8, "message": "Новых интересных проектов!", "image": "/static/lab9/gift9.png", "top": 55, "left": 40},
-    {"id": 9, "message": "Весёлых праздников!", "image": "/static/lab9/gift10.png", "top": 20, "left": 85}
+    {"id": 0, "message": "С Новым годом! Желаю счастья!", "image": "/static/lab9/gift1.png", "card_image": "/static/lab9/card1.png", "top": 15, "left": 10},
+    {"id": 1, "message": "Удачи в новом году!", "image": "/static/lab9/gift2.png", "card_image": "/static/lab9/card2.png", "top": 25, "left": 70},
+    {"id": 2, "message": "Здоровья и благополучия!", "image": "/static/lab9/gift3.png", "card_image": "/static/lab9/card3.png", "top": 40, "left": 20},
+    {"id": 3, "message": "Исполнения всех желаний!", "image": "/static/lab9/gift4.png", "card_image": "/static/lab9/card4.png", "top": 10, "left": 50},
+    {"id": 4, "message": "Мира и добра!", "image": "/static/lab9/gift5.png", "card_image": "/static/lab9/card5.png", "top": 60, "left": 80},
+    {"id": 5, "message": "Творческих успехов!", "image": "/static/lab9/gift6.png", "card_image": "/static/lab9/card6.png", "top": 70, "left": 30},
+    {"id": 6, "message": "Финансового процветания!", "image": "/static/lab9/gift7.png", "card_image": "/static/lab9/card7.png", "top": 35, "left": 60},
+    {"id": 7, "message": "Любви и гармонии!", "image": "/static/lab9/gift8.png", "card_image": "/static/lab9/card8.png", "top": 65, "left": 15},
+    {"id": 8, "message": "Новых интересных проектов!", "image": "/static/lab9/gift9.png", "card_image": "/static/lab9/card9.png", "top": 55, "left": 40},
+    {"id": 9, "message": "Весёлых праздников!", "image": "/static/lab9/gift10.png", "card_image": "/static/lab9/card10.png", "top": 20, "left": 85}
 ]
 
 # ПРОСТОЙ вариант: храним в памяти сервера (не в БД)

@@ -173,8 +173,10 @@ function showGift(data) {
                '<h3>Ваш подарок!</h3>' +
                '<div style="text-align: center;">' +
                '<img src="' + data.image + '" width="150" height="150" style="border: 3px solid gold;">' +
-               '<p style="font-size: 18px; font-weight: bold;">' + data.message + '</p>' +
-               '</div></div>';
+               '<div style="margin: 20px;">' +
+               '<img src="' + data.card_image + '" width="200" height="100" style="border: 2px dashed red;">' +
+               '<p style="font-size: 18px; font-weight: bold; margin-top: 10px;">' + data.message + '</p>' +
+               '</div></div></div>';
     
     var container = document.getElementById('giftContainer');
     container.insertAdjacentHTML('afterend', html);
