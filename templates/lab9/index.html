@@ -106,6 +106,13 @@ function createBoxes() {
         div.style.top = box.top + '%';
         div.style.left = box.left + '%';
         
+        // ДОБАВЛЯЕМ ОБРАБОТЧИК КЛИКА
+        div.onclick = function() {
+            if (!div.classList.contains('opened')) {
+                openBox(box.id);
+            }
+        };
+        
         var img = document.createElement('img');
         img.src = '/static/lab9/gift' + (box.id + 1) + '.png';
         
@@ -129,6 +136,8 @@ function checkBoxes() {
                 var box = document.getElementById('box-' + boxId);
                 if (box) {
                     box.classList.add('opened');
+                    // Убираем обработчик клика у открытых коробок
+                    box.onclick = null;
                 }
             });
         });
@@ -154,7 +163,7 @@ function openBox(boxId) {
         
         // Помечаем как открытую
         box.classList.add('opened');
-
+        box.onclick = null; // Убираем обработчик клика
         
         // Показываем подарок
         showGift(data);
@@ -207,16 +216,6 @@ function resetBoxes() {
     });
 }
 
-// После создания коробок назначаем обработчики кликов
-setTimeout(function() {
-    boxes.forEach(function(box) {
-        var boxElement = document.getElementById('box-' + box.id);
-        if (boxElement && !boxElement.classList.contains('opened')) {
-            boxElement.onclick = function() {
-                openBox(box.id);
-            };
-        }
-    });
-}, 100);
+// УДАЛЯЕМ этот ненужный setTimeout, так как обработчики уже назначены при создании
 </script>
 {% endblock %}
