@@ -21,12 +21,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        cursor: pointer;
-        transition: transform 0.2s;
-    }
-    
-    .gift-box:hover {
-        transform: scale(1.1);
     }
     
     .gift-box img {
@@ -37,11 +31,6 @@
     
     .opened {
         opacity: 0.3;
-        cursor: not-allowed;
-    }
-    
-    .opened:hover {
-        transform: none;
     }
     
     .info {
@@ -73,14 +62,13 @@
 
 <div class="info">
     <p>Открыто подарков: <span id="openedCount">{{ opened_count }}</span> из 3</p>
-    <p>Осталось коробок: <span id="remainingCount">{{ remaining }}</span> из 10</p>
 </div>
 
 <div id="giftContainer" class="gift-container"></div>
 
 {% if login %}
 <div style="text-align: center; margin: 20px 0;">
-    <button onclick="resetBoxes()" style="padding: 10px 20px; background: red; color: white; border: none; cursor: pointer;">
+    <button onclick="resetBoxes()" style="padding: 10px 20px; background: red; color: white; border: none;">
         Дед Мороз (заполнить все коробки заново)
     </button>
 </div>
@@ -110,7 +98,6 @@ window.onload = function() {
 // Создаем коробки
 function createBoxes() {
     var container = document.getElementById('giftContainer');
-    container.innerHTML = ''; // Очищаем контейнер
     
     boxes.forEach(function(box) {
         var div = document.createElement('div');
@@ -121,7 +108,6 @@ function createBoxes() {
         
         var img = document.createElement('img');
         img.src = '/static/lab9/gift' + (box.id + 1) + '.png';
-        img.alt = 'Подарок ' + (box.id + 1);
         
         div.appendChild(img);
         container.appendChild(div);
@@ -135,49 +121,22 @@ function checkBoxes() {
             return response.json();
         })
         .then(function(data) {
-            // Обновляем счетчики
+            // Обновляем счетчик
             document.getElementById('openedCount').textContent = data.user_opened_count;
-            document.getElementById('remainingCount').textContent = data.global_remaining;
             
-            // Помечаем открытые коробки и убираем обработчики
+            // Помечаем открытые коробки
             data.global_opened.forEach(function(boxId) {
                 var box = document.getElementById('box-' + boxId);
                 if (box) {
                     box.classList.add('opened');
-                    box.onclick = null;
-                    box.style.cursor = 'not-allowed';
                 }
             });
-            
-            // Назначаем обработчики только на неоткрытые коробки
-            assignClickHandlers();
-        })
-        .catch(function(error) {
-            console.error('Ошибка при проверке коробок:', error);
         });
-}
-
-// Назначаем обработчики кликов
-function assignClickHandlers() {
-    boxes.forEach(function(box) {
-        var boxElement = document.getElementById('box-' + box.id);
-        if (boxElement && !boxElement.classList.contains('opened')) {
-            boxElement.onclick = function() {
-                openBox(box.id);
-            };
-            boxElement.style.cursor = 'pointer';
-        }
-    });
 }
 
 // Открываем коробку
 function openBox(boxId) {
     var box = document.getElementById('box-' + boxId);
-    
-    // Проверяем, не открыта ли уже
-    if (box.classList.contains('opened')) {
-        return;
-    }
     
     fetch('/lab9/open_box', {
         method: 'POST',
@@ -185,9 +144,6 @@ function openBox(boxId) {
         body: JSON.stringify({box_id: boxId})
     })
     .then(function(response) {
-        if (!response.ok) {
-            throw new Error('Ошибка сети');
-        }
         return response.json();
     })
     .then(function(data) {
@@ -198,30 +154,21 @@ function openBox(boxId) {
         
         // Помечаем как открытую
         box.classList.add('opened');
-        box.onclick = null;
-        box.style.cursor = 'not-allowed';
+
         
         // Показываем подарок
         showGift(data);
         
-        // Обновляем счетчики
+        // Обновляем счетчик
         document.getElementById('openedCount').textContent = data.opened_count;
-        document.getElementById('remainingCount').textContent = data.remaining;
     })
     .catch(function(error) {
-        console.error('Ошибка:', error);
-        alert('Ошибка соединения с сервером');
+        alert('Ошибка соединения');
     });
 }
 
 // Показываем подарок
 function showGift(data) {
-    // Удаляем предыдущие результаты
-    var oldResults = document.querySelectorAll('.result');
-    oldResults.forEach(function(el) {
-        el.remove();
-    });
-    
     var html = '<div class="result">' +
                '<h3>Ваш подарок!</h3>' +
                '<div style="text-align: center;">' +
@@ -235,7 +182,7 @@ function showGift(data) {
 
 // Сброс всех коробок
 function resetBoxes() {
-    if (!confirm('Вы уверены, что хотите заполнить все коробки заново? Все текущие подарки будут сброшены.')) {
+    if (!confirm('Вы уверены, что хотите заполнить все коробки заново?')) {
         return;
     }
     
@@ -244,9 +191,6 @@ function resetBoxes() {
         headers: {'Content-Type': 'application/json'}
     })
     .then(function(response) {
-        if (!response.ok) {
-            throw new Error('Ошибка сети');
-        }
         return response.json();
     })
     .then(function(data) {
@@ -255,34 +199,20 @@ function resetBoxes() {
             return;
         }
         
-        // Сбрасываем интерфейс без перезагрузки
-        resetUI();
+        // ПРОСТО ОБНОВЛЯЕМ СТАТУС КОРОБОК
+        checkBoxes();
         
-        // Обновляем счетчики
-        document.getElementById('openedCount').textContent = 0;
-        document.getElementById('remainingCount').textContent = data.remaining;
+        // Удаляем сообщения о подарках
+        var results = document.querySelectorAll('.result');
+        results.forEach(function(result) {
+            result.remove();
+        });
         
-        alert('Все коробки были сброшены и заполнены заново!');
+        alert('Коробки сброшены!');
     })
     .catch(function(error) {
-        console.error('Ошибка:', error);
-        alert('Ошибка соединения с сервером');
+        alert('Ошибка соединения');
     });
-}
-
-// Сброс интерфейса без перезагрузки
-function resetUI() {
-    // Удаляем все результаты
-    var oldResults = document.querySelectorAll('.result');
-    oldResults.forEach(function(el) {
-        el.remove();
-    });
-    
-    // Пересоздаем коробки
-    createBoxes();
-    
-    // Проверяем статус коробок
-    checkBoxes();
 }
 </script>
 {% endblock %}
