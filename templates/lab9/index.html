@@ -77,23 +77,23 @@
 <script>
 // Координаты коробок
 var boxes = [
-    {id: 0, top: 15, left: 10, img: '/static/lab9/gift1.png'},
-    {id: 1, top: 25, left: 70, img: '/static/lab9/gift2.png'},
-    {id: 2, top: 40, left: 20, img: '/static/lab9/gift3.png'},
-    {id: 3, top: 10, left: 50, img: '/static/lab9/gift4.png'},
-    {id: 4, top: 60, left: 80, img: '/static/lab9/gift5.png'},
-    {id: 5, top: 70, left: 30, img: '/static/lab9/gift6.png'},
-    {id: 6, top: 35, left: 60, img: '/static/lab9/gift7.png'},
-    {id: 7, top: 65, left: 15, img: '/static/lab9/gift8.png'},
-    {id: 8, top: 55, left: 40, img: '/static/lab9/gift9.png'},
-    {id: 9, top: 20, left: 85, img: '/static/lab9/gift10.png'}
+    {id: 0, top: 15, left: 10},
+    {id: 1, top: 25, left: 70},
+    {id: 2, top: 40, left: 20},
+    {id: 3, top: 10, left: 50},
+    {id: 4, top: 60, left: 80},
+    {id: 5, top: 70, left: 30},
+    {id: 6, top: 35, left: 60},
+    {id: 7, top: 65, left: 15},
+    {id: 8, top: 55, left: 40},
+    {id: 9, top: 20, left: 85}
 ];
 
 // При загрузке страницы
-document.addEventListener('DOMContentLoaded', function() {
+window.onload = function() {
     createBoxes();
     checkBoxes();
-});
+};
 
 // Создаем коробки
 function createBoxes() {
@@ -105,28 +105,12 @@ function createBoxes() {
         div.id = 'box-' + box.id;
         div.style.top = box.top + '%';
         div.style.left = box.left + '%';
-        div.dataset.boxId = box.id; // Добавляем data-атрибут
         
         var img = document.createElement('img');
-        img.src = box.img;
-        img.alt = 'Подарок ' + (box.id + 1);
+        img.src = '/static/lab9/gift' + (box.id + 1) + '.png';
         
         div.appendChild(img);
         container.appendChild(div);
-        
-        // Немедленно добавляем обработчик клика
-        div.addEventListener('click', function() {
-            var boxId = parseInt(this.dataset.boxId);
-            console.log("Кликнули на коробку:", boxId);
-            
-            // Проверяем, открыта ли уже коробка
-            if (this.classList.contains('opened')) {
-                alert("Эта коробка уже пуста! Подарок уже забрали.");
-                return;
-            }
-            
-            openBox(boxId);
-        });
     });
 }
 
@@ -137,29 +121,22 @@ function checkBoxes() {
             return response.json();
         })
         .then(function(data) {
-            console.log("Статус коробок:", data);
-            
             // Обновляем счетчик
             document.getElementById('openedCount').textContent = data.user_opened_count;
-            document.getElementById('remainingCount').textContent = data.global_remaining;
             
             // Помечаем открытые коробки
             data.global_opened.forEach(function(boxId) {
                 var box = document.getElementById('box-' + boxId);
                 if (box) {
                     box.classList.add('opened');
-                    box.style.cursor = 'not-allowed';
                 }
             });
-        })
-        .catch(function(error) {
-            console.error("Ошибка при проверке коробок:", error);
         });
 }
 
 // Открываем коробку
 function openBox(boxId) {
-    console.log("Отправляем запрос на открытие коробки:", boxId);
+    var box = document.getElementById('box-' + boxId);
     
     fetch('/lab9/open_box', {
         method: 'POST',
@@ -167,53 +144,36 @@ function openBox(boxId) {
         body: JSON.stringify({box_id: boxId})
     })
     .then(function(response) {
-        console.log("Ответ от сервера получен:", response.status);
-        if (!response.ok) {
-            throw new Error('Ошибка сети: ' + response.status);
-        }
         return response.json();
     })
     .then(function(data) {
-        console.log("Данные получены:", data);
-        
         if (data.error) {
             alert(data.error);
             return;
         }
         
         // Помечаем как открытую
-        var box = document.getElementById('box-' + boxId);
-        if (box) {
-            box.classList.add('opened');
-            box.style.cursor = 'not-allowed';
-        }
+        box.classList.add('opened');
+
         
         // Показываем подарок
         showGift(data);
         
-        // Обновляем счетчики
+        // Обновляем счетчик
         document.getElementById('openedCount').textContent = data.opened_count;
-        document.getElementById('remainingCount').textContent = data.remaining;
     })
     .catch(function(error) {
-        console.error("Ошибка при открытии коробки:", error);
-        alert('Ошибка соединения: ' + error.message);
+        alert('Ошибка соединения');
     });
 }
 
 // Показываем подарок
 function showGift(data) {
-    // Удаляем предыдущие результаты
-    var oldResult = document.querySelector('.result');
-    if (oldResult) {
-        oldResult.remove();
-    }
-    
     var html = '<div class="result">' +
-               '<h3>🎁 Ваш подарок!</h3>' +
+               '<h3>Ваш подарок!</h3>' +
                '<div style="text-align: center;">' +
                '<img src="' + data.image + '" width="150" height="150" style="border: 3px solid gold;">' +
-               '<p style="font-size: 18px; font-weight: bold; margin-top: 10px;">' + data.message + '</p>' +
+               '<p style="font-size: 18px; font-weight: bold;">' + data.message + '</p>' +
                '</div></div>';
     
     var container = document.getElementById('giftContainer');
@@ -231,9 +191,6 @@ function resetBoxes() {
         headers: {'Content-Type': 'application/json'}
     })
     .then(function(response) {
-        if (!response.ok) {
-            throw new Error('Ошибка сети: ' + response.status);
-        }
         return response.json();
     })
     .then(function(data) {
@@ -246,9 +203,20 @@ function resetBoxes() {
         location.reload();
     })
     .catch(function(error) {
-        console.error("Ошибка при сбросе коробок:", error);
-        alert('Ошибка соединения: ' + error.message);
+        alert('Ошибка соединения');
     });
 }
+
+// После создания коробок назначаем обработчики кликов
+setTimeout(function() {
+    boxes.forEach(function(box) {
+        var boxElement = document.getElementById('box-' + box.id);
+        if (boxElement && !boxElement.classList.contains('opened')) {
+            boxElement.onclick = function() {
+                openBox(box.id);
+            };
+        }
+    });
+}, 100);
 </script>
 {% endblock %}
