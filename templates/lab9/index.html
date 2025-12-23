@@ -218,5 +218,17 @@ setTimeout(function() {
         }
     });
 }, 100);
+boxes.forEach(function(box) {
+    var boxElement = document.getElementById('box-' + box.id);
+    if (boxElement) {
+        boxElement.onclick = function() {
+            if (this.classList.contains('opened')) {
+                alert("Эта коробка уже пуста! Подарок уже забрали.");
+                return;
+            }
+            openBox(box.id);
+        };
+    }
+});
 </script>
 {% endblock %}
