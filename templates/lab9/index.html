@@ -144,8 +144,15 @@ function checkBoxes() {
 }
 
 // Открываем коробку
+// Открываем коробку
 function openBox(boxId) {
     var box = document.getElementById('box-' + boxId);
+    
+    // ПРОВЕРЯЕМ НА КЛИЕНТЕ, ЧТО КОРОБКА ЕЩЕ НЕ ОТКРЫТА
+    if (box.classList.contains('opened')) {
+        alert('Эта коробка уже открыта!');
+        return;
+    }
     
     fetch('/lab9/open_box', {
         method: 'POST',
