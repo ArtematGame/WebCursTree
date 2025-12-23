@@ -1,0 +1,122 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('giftContainer');
+        const modal = document.getElementById('resultModal');
+        const modalText = document.getElementById('modalText');
+        const modalGift = document.getElementById('modalGift');
+        const closeBtn = document.getElementById('closeModal');
+        const remainingEl = document.getElementById('remainingCount');
+        const openedEl = document.getElementById('openedCount');
+        const resetBtn = document.getElementById('resetBtn');
+        const userStatus = document.getElementById('userStatus');
+        
+        // Позиции из сессии
+        const positions = [
+            {% for pos in session.get('box_positions', []) %}
+                {top: {{ pos.top }}, left: {{ pos.left }}},
+            {% endfor %}
+        ];
+        
+        // Создаем коробки
+        positions.forEach((pos, index) => {
+            const box = document.createElement('div');
+            box.className = 'gift-box';
+            box.id = `box-${index}`;
+            box.style.top = pos.top + '%';
+            box.style.left = pos.left + '%';
+            
+            // Проверяем, открыта ли коробка
+            const isOpened = {{ opened_boxes|tojson }}.includes(index);
+            if (isOpened) {
+                box.classList.add('opened');
+            }
+            
+            // Выбираем случайный цвет
+            const colors = ['pink', 'yellow', 'red'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            box.innerHTML = `<img class="gift-img" src="{{ url_for('static', filename='img/') }}${color}_gift.png" alt="Подарок">`;
+            
+            box.addEventListener('click', function() {
+                if (!box.classList.contains('opened')) {
+                    openBox(index);
+                }
+            });
+            
+            container.appendChild(box);
+        });
+        
+        // Загружаем статус
+        loadStatus();
+        
+        function openBox(index) {
+            fetch('/lab9/open_box', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({box_index: index})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    // Помечаем как открытую
+                    document.getElementById(`box-${index}`).classList.add('opened');
+                    
+                    // Показываем результат
+                    showResult(data.congratulations, data.gift_color);
+                    
+                    // Обновляем счетчики
+                    updateCounters(data.remaining, data.opened_count);
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(e => alert('Ошибка'));
+        }
+        
+        function showResult(text, color) {
+            modalText.textContent = text;
+            modalGift.src = "{{ url_for('static', filename='img/') }}" + color + "_gift.png";
+            modal.style.display = 'flex';
+        }
+        
+        closeBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        function loadStatus() {
+            fetch('/lab9/status')
+            .then(r => r.json())
+            .then(data => {
+                updateCounters(data.remaining, data.opened_count);
+                
+                if (data.login) {
+                    userStatus.textContent = 'Вы вошли как: ' + data.login;
+                    if (resetBtn) resetBtn.style.display = 'inline-block';
+                } else {
+                    userStatus.textContent = 'Гость (макс. 3 коробки)';
+                    if (resetBtn) resetBtn.style.display = 'none';
+                }
+            });
+        }
+        
+        function updateCounters(remaining, opened) {
+            if (remainingEl) remainingEl.textContent = remaining;
+            if (openedEl) openedEl.textContent = opened;
+        }
+        
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+                if (confirm('Наполнить все коробки снова?')) {
+                    fetch('/lab9/reset', {method: 'POST'})
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(data.message);
+                            location.reload();
+                        }
+                    });
+                }
+            });
+        }
+    });
+</script>

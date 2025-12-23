@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 9{% endblock %}
+
+{% block main %}
+    <div style="text-align: right; margin: 10px; font-weight: bold;">
+        Пользователь: {% if login %}{{ login }}{% else %}Anonymous{% endif %}
+        <a href="/lab9/logout">Выйти с профиля</a>
+        <a href="/lab9/login">Войти</a>
+        <a href="/lab9/register">Регистрация</a>
+    </div>
+    <h1>Новогодние подарки</h1>
+    <div>
+        Подарки
+    </div>
+
+{% endblock %}
