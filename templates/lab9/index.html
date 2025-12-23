@@ -154,9 +154,7 @@ function openBox(boxId) {
         
         // Помечаем как открытую
         box.classList.add('opened');
-        
-        // ПРОСТОЕ ИСПРАВЛЕНИЕ: убираем обработчик клика
-        box.onclick = null;
+
         
         // Показываем подарок
         showGift(data);
@@ -220,5 +218,18 @@ setTimeout(function() {
         }
     });
 }, 100);
+
+boxes.forEach(function(box) {
+    var boxElement = document.getElementById('box-' + box.id);
+    if (boxElement) {
+        boxElement.onclick = function() {
+            if (this.classList.contains('opened')) {
+                alert("Эта коробка уже пуста! Подарок уже забрали.");
+                return;
+            }
+            openBox(box.id);
+        };
+    }
+});
 </script>
 {% endblock %}
