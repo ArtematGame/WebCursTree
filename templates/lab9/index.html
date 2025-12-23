@@ -199,16 +199,34 @@ function resetBoxes() {
             return;
         }
         
-        // ПРОСТО ОБНОВЛЯЕМ СТАТУС КОРОБОК
-        checkBoxes();
+        // ВОТ САМОЕ ВАЖНОЕ ИСПРАВЛЕНИЕ:
+        // 1. Сбрасываем класс 'opened' у всех коробок
+        boxes.forEach(function(box) {
+            var boxElement = document.getElementById('box-' + box.id);
+            if (boxElement) {
+                boxElement.classList.remove('opened');
+            }
+        });
         
-        // Удаляем сообщения о подарках
+        // 2. Обновляем счетчик
+        document.getElementById('openedCount').textContent = 0;
+        
+        // 3. Удаляем сообщения о подарках
         var results = document.querySelectorAll('.result');
         results.forEach(function(result) {
             result.remove();
         });
         
-        alert('Коробки сброшены!');
+        // 4. Снова назначаем обработчики кликов
+        boxes.forEach(function(box) {
+            var boxElement = document.getElementById('box-' + box.id);
+            if (boxElement) {
+                boxElement.onclick = function() {
+                    openBox(box.id);
+                };
+            }
+        });
+        
     })
     .catch(function(error) {
         alert('Ошибка соединения');
