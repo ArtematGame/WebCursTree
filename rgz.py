@@ -162,8 +162,8 @@ def transfer():
     
     # Ищем получателя
     cursor.execute(
-        "SELECT * FROM users WHERE account = ?",
-        (to_account,)
+        "SELECT * FROM users WHERE account = ? OR phone = ?",
+        (to_account, to_account)
     )
     
     recipient_data = cursor.fetchone()
