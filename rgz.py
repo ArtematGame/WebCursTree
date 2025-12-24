@@ -6,8 +6,11 @@ rgz = Blueprint('rgz', __name__)
 
 def get_db():
     """Получает соединение с базой данных"""
-    conn = sqlite3.connect('database.db')
-    conn.row_factory = sqlite3.Row  # Для доступа к колонкам по имени
+    # Используйте правильный путь к базе данных
+    db_path = '/home/Artemat/WebCursTree/sqlite3/database.db'
+    
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
     return conn
 
 def hash_password(password):
