@@ -75,28 +75,6 @@ def check_database():
     except Exception as e:
         print(f"Ошибка при проверке таблицы users: {e}")
     
-    # Проверяем таблицу user_bank_info
-    try:
-        cursor.execute("SELECT COUNT(*) as count, 'user_bank_info' as table_name FROM user_bank_info")
-        result = cursor.fetchone()
-        print(f"Таблица user_bank_info: {result[0]} записей")
-    except Exception as e:
-        print(f"Ошибка при проверке таблицы user_bank_info: {e}")
-    
-    # Показываем несколько пользователей
-    try:
-        cursor.execute("""
-            SELECT u.id, u.login, u.real_name, ubi.account, ubi.balance, ubi.is_manager
-            FROM users u
-            LEFT JOIN user_bank_info ubi ON u.id = ubi.user_id
-            LIMIT 5
-        """)
-        
-        print("\nПервые 5 пользователей:")
-        for row in cursor.fetchall():
-            print(f"ID: {row[0]}, Login: {row[1]}, Name: {row[2]}, Account: {row[3]}, Balance: {row[4]}, Manager: {row[5]}")
-    except Exception as e:
-        print(f"Ошибка при выборке пользователей: {e}")
     
     conn.close()
 
