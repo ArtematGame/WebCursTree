@@ -8,21 +8,15 @@
     {% if transactions %}
         <table border="1" style="width: 100%;">
             <tr>
-                <th>Тип</th>
-                <th>Сумма</th>
                 <th>От кого</th>
                 <th>Кому</th>
+                <th>Сумма</th>
                 <th>Описание</th>
             </tr>
             {% for t in transactions %}
             <tr>
-                <td style="text-align: center;">
-                    {% if t.from_account == user.account %}
-                        <span style="color: red; font-weight: bold;">-</span>
-                    {% else %}
-                        <span style="color: green; font-weight: bold;">+</span>
-                    {% endif %}
-                </td>
+                <td>{{ t.from_account or '-' }}</td>
+                <td>{{ t.to_account }}</td>
                 <td>
                     {% if t.from_account == user.account %}
                         <span style="color: red;">-{{ t.amount }} руб.</span>
@@ -30,8 +24,6 @@
                         <span style="color: green;">+{{ t.amount }} руб.</span>
                     {% endif %}
                 </td>
-                <td>{{ t.from_account or '-' }}</td>
-                <td>{{ t.to_account }}</td>
                 <td>{{ t.description or '-' }}</td>
             </tr>
             {% endfor %}
