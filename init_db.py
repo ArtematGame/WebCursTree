@@ -1,9 +1,10 @@
-# Файл: init_db.py
 import sqlite3
 import hashlib
 
 def init_database():
-    conn = sqlite3.connect('database.db')
+    # Используем тот же путь
+    db_path = '/home/Artemat/WebCursTree/sqlite3/database.db'
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
     # Проверяем, есть ли уже пользователи
@@ -15,37 +16,35 @@ def init_database():
         conn.close()
         return
     
-    # Данные для вставки
+    # Данные для вставки - УБРАЛИ ID из кортежей
     users_to_insert = [
-        (1, 'admin', 'admin123', 'Иванов Иван', '+79001112233', 'ADMIN001', 0, True),
-        (2, 'client1', 'client123', 'Сидорова Анна', '+79003334455', 'ACC001', 1000, False),
-        (3, 'client2', 'client123', 'Кузнецов Сергей', '+79004445566', 'ACC002', 1000, False),
-        (4, 'client3', 'client123', 'Смирнова Ольга', '+79005556677', 'ACC003', 1000, False),
-        (5, 'client4', 'client123', 'Васильев Дмитрий', '+79006667788', 'ACC004', 1000, False),
-        (6, 'client5', 'client123', 'Николаева Елена', '+79007778899', 'ACC005', 1000, False),
-        (7, 'client6', 'client123', 'Алексеев Алексей', '+79008889900', 'ACC006', 1000, False),
-        (8, 'client7', 'client123', 'Павлова Мария', '+79009990011', 'ACC007', 1000, False),
-        (9, 'client8', 'client123', 'Федоров Андрей', '+79001001122', 'ACC008', 1000, False),
-        (10, 'client9', 'client123', 'Соколова Виктория', '+79001112233', 'ACC009', 1000, False),
-        (11, 'client10', 'client123', 'Лебедев Максим', '+79001223344', 'ACC010', 1000, False),
+        ('admin', 'admin123', 'Иванов Иван', '+79001112233', 'ADMIN001', 0, True),
+        ('client1', 'client123', 'Сидорова Анна', '+79003334455', 'ACC001', 1000, False),
+        ('client2', 'client123', 'Кузнецов Сергей', '+79004445566', 'ACC002', 1000, False),
+        ('client3', 'client123', 'Смирнова Ольга', '+79005556677', 'ACC003', 1000, False),
+        ('client4', 'client123', 'Васильев Дмитрий', '+79006667788', 'ACC004', 1000, False),
+        ('client5', 'client123', 'Николаева Елена', '+79007778899', 'ACC005', 1000, False),
+        ('client6', 'client123', 'Алексеев Алексей', '+79008889900', 'ACC006', 1000, False),
+        ('client7', 'client123', 'Павлова Мария', '+79009990011', 'ACC007', 1000, False),
+        ('client8', 'client123', 'Федоров Андрей', '+79001001122', 'ACC008', 1000, False),
+        ('client9', 'client123', 'Соколова Виктория', '+79001112233', 'ACC009', 1000, False),
+        ('client10', 'client123', 'Лебедев Максим', '+79001223344', 'ACC010', 1000, False),
     ]
-
     
     print("Начинаем заполнение базы данных...")
     
     for user_data in users_to_insert:
-        user_id, login, password, full_name, phone, account, balance, is_manager = user_data
+        # Теперь кортеж состоит из 7 элементов (без ID)
+        login, password, full_name, phone, account, balance, is_manager = user_data
         
         # Хешируем пароль
         password_hash = hashlib.sha256(password.encode()).hexdigest()
         
         try:
-
             cursor.execute(
                 "INSERT INTO users (login, password, full_name, phone, account, balance, is_manager) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 (login, password_hash, full_name, phone, account, balance, is_manager)
             )
-        
             
             print(f"Добавлен пользователь: {login}")
             
@@ -61,7 +60,8 @@ def init_database():
 
 def check_database():
     """Проверяем состояние базы данных"""
-    conn = sqlite3.connect('database.db')
+    db_path = '/home/Artemat/WebCursTree/sqlite3/database.db'
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
     print("\n=== Проверка базы данных ===")
@@ -73,8 +73,6 @@ def check_database():
         print(f"Таблица users: {result[0]} записей")
     except Exception as e:
         print(f"Ошибка при проверке таблицы users: {e}")
-    
-
     
     conn.close()
 

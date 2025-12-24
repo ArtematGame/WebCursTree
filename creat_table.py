@@ -1,6 +1,9 @@
 import sqlite3
 
-conn = sqlite3.connect('database.db')
+# Используем тот же путь что и в rgz.py
+db_path = '/home/Artemat/WebCursTree/sqlite3/database.db'
+
+conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
 
 # Удаляем старую таблицу если есть
@@ -22,4 +25,4 @@ CREATE TABLE users (
 
 conn.commit()
 conn.close()
-print("Таблица users создана!")
+print(f"Таблица users создана в {db_path}!")
