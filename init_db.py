@@ -43,7 +43,7 @@ def init_database():
         try:
 
             cursor.execute(
-                "INSERT INTO users (id, login, password, real_name, phone, account  balance, is_manager) VALUES (?, ?, ?, ?)",
+                "INSERT INTO users (id, login, password, real_name, phone, account,  balance, is_manager) VALUES (?, ?, ?, ?)",
                 (user_id, login, password_hash, real_name, phone, account, balance, is_manager)
             )
         
@@ -75,6 +75,7 @@ def check_database():
     except Exception as e:
         print(f"Ошибка при проверке таблицы users: {e}")
     
+
     
     conn.close()
 
