@@ -55,16 +55,19 @@ def login():
         (login_input,)
     )
     
-    user_data = cursor.fetchone()
+    user_data = cursor.fetchone()  # <-- Вот здесь получаем данные
     conn.close()
     
-    if not user_data:
+    if not user_data:  # <-- Проверяем, нашли ли пользователя
         return render_template('rgz/login.html', error='Неверный логин или пароль')
     
+    # Преобразуем строку Row в словарь
     user = dict(user_data)
     
-    # Проверяем пароль
-    hashed_password = hash_password(password_input)
+    # Хешируем введенный пароль для сравнения
+    hashed_password = hashlib.sha256(password_input.encode()).hexdigest()
+    
+    # Сравниваем хеши
     if user['password'] != hashed_password:
         return render_template('rgz/login.html', error='Неверный логин или пароль')
     
