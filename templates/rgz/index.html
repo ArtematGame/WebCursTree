@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block lab %}Банковская система{% endblock %}
+
+{% block main %}
+    <h1>Банковская система</h1>
+    
+    {% if user %}
+        <p>Добро пожаловать, {{ user.full_name }}!</p>
+        <p>Ваш счет: {{ user.account }}</p>
+        <p>Баланс: {{ user.balance }} руб.</p>
+        
+        <div>
+            <a href="/rgz/dashboard">Личный кабинет</a> |
+            <a href="/rgz/transfer">Перевод денег</a> |
+            <a href="/rgz/transactions">История операций</a>
+            {% if user.is_manager %}
+                | <a href="/rgz/manage">Управление пользователями</a>
+                | <a href="/rgz/create_user">Создать пользователя</a>
+            {% endif %}
+            | <a href="/rgz/logout">Выйти</a>
+        </div>
+    {% else %}
+        <p>Для работы с банковской системой необходимо войти в систему.</p>
+        <p><a href="/rgz/login">Войти в систему</a></p>
+        
+        <h3>Тестовые пользователи:</h3>
+        <ul>
+            <li>Менеджер: admin / admin123</li>
+            <li>Клиент: client1 / client123</li>
+        </ul>
+    {% endif %}
+{% endblock %}

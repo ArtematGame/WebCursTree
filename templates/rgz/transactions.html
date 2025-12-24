@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block lab %}История операций{% endblock %}
+
+{% block main %}
+    <h1>История операций</h1>
+    
+    {% if transactions %}
+        <table border="1" style="width: 100%;">
+            <tr>
+                <th>От кого</th>
+                <th>Кому</th>
+                <th>Сумма</th>
+                <th>Описание</th>
+            </tr>
+            {% for t in transactions %}
+            <tr>
+                <td>{{ t.from_account or '-' }}</td>
+                <td>{{ t.to_account }}</td>
+                <td>{{ t.amount }} руб.</td>
+                <td>{{ t.description or '-' }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>У вас еще нет операций</p>
+    {% endif %}
+    
+    <div>
+        <a href="/rgz/dashboard">Вернуться в личный кабинет</a>
+    </div>
+{% endblock %}

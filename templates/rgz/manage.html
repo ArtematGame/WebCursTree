@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block lab %}Управление пользователями{% endblock %}
+
+{% block main %}
+    <h1>Управление пользователями</h1>
+    
+    <table border="1" style="width: 100%;">
+        <tr>
+            <th>ФИО</th>
+            <th>Логин</th>
+            <th>Телефон</th>
+            <th>Счет</th>
+            <th>Баланс</th>
+            <th>Роль</th>
+        </tr>
+        {% for u in users %}
+        <tr>
+            <td>{{ u.full_name }}</td>
+            <td>{{ u.login }}</td>
+            <td>{{ u.phone }}</td>
+            <td>{{ u.account }}</td>
+            <td>{{ u.balance }} руб.</td>
+            <td>{% if u.is_manager %}Менеджер{% else %}Клиент{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <div>
+        <a href="/rgz/create_user">Создать нового пользователя</a> |
+        <a href="/rgz/dashboard">Вернуться в личный кабинет</a>
+    </div>
+{% endblock %}

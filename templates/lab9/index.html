@@ -201,8 +201,7 @@ function resetBoxes() {
             return;
         }
         
-        // ВОТ САМОЕ ВАЖНОЕ ИСПРАВЛЕНИЕ:
-        // 1. Сбрасываем класс 'opened' у всех коробок
+        // Сбрасываем класс 'opened' у всех коробок
         boxes.forEach(function(box) {
             var boxElement = document.getElementById('box-' + box.id);
             if (boxElement) {
@@ -210,16 +209,16 @@ function resetBoxes() {
             }
         });
         
-        // 2. Обновляем счетчик
+        // Обновляем счетчик
         document.getElementById('openedCount').textContent = 0;
         
-        // 3. Удаляем сообщения о подарках
+        // Удаляем сообщения о подарках
         var results = document.querySelectorAll('.result');
         results.forEach(function(result) {
             result.remove();
         });
         
-        // 4. Снова назначаем обработчики кликов
+        // Снова назначаем обработчики кликов
         boxes.forEach(function(box) {
             var boxElement = document.getElementById('box-' + box.id);
             if (boxElement) {

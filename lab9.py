@@ -44,16 +44,14 @@ gifts = [
     {"id": 9, "message": "Весёлых праздников!", "image": "/static/lab9/gift10.png", "card_image": "/static/lab9/card10.png", "top": 20, "left": 85}
 ]
 
-# ПРОСТОЙ вариант: храним в памяти сервера (не в БД)
 opened_boxes_global = set()  # ID открытых коробок для всех пользователей
 
 @lab9.route('/lab9/')
 def main():
-    # Инициализация сессии для подарков
+
     if 'opened_boxes' not in session:
         session['opened_boxes'] = []
     
-    # Синхронизируем с глобальным хранилищем
     user_opened = [box_id for box_id in session['opened_boxes'] if box_id in opened_boxes_global]
     session['opened_boxes'] = user_opened
     
@@ -73,9 +71,6 @@ def open_box():
     
     data = request.get_json()
     box_id = data.get('box_id')
-    
-    if box_id is None or not isinstance(box_id, int) or box_id < 0 or box_id > 9:
-        return jsonify({"error": "Неверный ID коробки"}), 400
     
     # Проверяем, не открыта ли уже эта коробка
     if box_id in opened_boxes_global:
@@ -117,7 +112,6 @@ def reset_boxes():
     
     global opened_boxes_global
     
-    # Очищаем глобальное хранилище
     opened_boxes_global.clear()
     
     # Очищаем сессию пользователя
@@ -130,7 +124,7 @@ def reset_boxes():
 
 @lab9.route('/lab9/check_boxes')
 def check_boxes():
-    """Получить информацию о текущем состоянии коробок"""
+
     user_opened = session.get('opened_boxes', [])
     
     return jsonify({

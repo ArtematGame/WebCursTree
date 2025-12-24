@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block lab %}Публичные статьи{% endblock %}
+
+{% block main %}
+    <h1>Публичные статьи</h1>
+    
+    <div style="margin-bottom: 20px;">
+        <a href="/lab8/" class="button">К заданиям</a>
+        <a href="/lab8/articles/search/" class="button" style="margin-left: 10px;">Поиск статей</a>
+        {% if login %}
+            <a href="/lab8/articles/" class="button" style="margin-left: 10px;">Мои статьи</a>
+        {% endif %}
+    </div>
+    
+    {% if articles %}
+        {% for article in articles %}
+            <div style="border: 1px solid #ccc; margin: 10px 0; padding: 10px;">
+                <h3>{{ article.title }}</h3>
+                <p>{{ article.article_text }}</p>
+                <small>Автор: {{ article.login_id }}</small>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Нет публичных статей</p>
+    {% endif %}
+{% endblock %}

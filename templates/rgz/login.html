@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block lab %}РГЗ{% endblock %}
+
+{% block main %}
+    <h1>Вход в систему</h1>
+    
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <form action="/lab9/login" method="post">
+        <div>
+            <label>
+                Логин: <input type="text" name="login">
+            </label>
+        </div>
+
+        <div>
+            <label>
+                Пароль: <input type="password" name="password">
+            </label>
+        </div>
+
+        <div>
+            <button type="submit">Вход</button>
+        </div>
+        <div>
+            <a href="/register">Регистрация</a>
+        </div>
+    </form>
+    <div>
+        <a href="/rgz">Вернуться к заданиям</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block lab %}Создание пользователя{% endblock %}
+
+{% block main %}
+    <h1>Создание нового пользователя</h1>
+    
+    {% if error %}
+        <div style="color: red; font-weight: bold; margin-bottom: 10px;">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <form action="/rgz/create_user" method="post">
+        <div>
+            <label>
+                ФИО: <input type="text" name="full_name">
+            </label>
+        </div>
+
+        <div>
+            <label>
+                Логин: <input type="text" name="login">
+            </label>
+        </div>
+        
+        <div>
+            <label>
+                Пароль: <input type="password" name="password">
+            </label>
+        </div>
+        
+        <div>
+            <label>
+                Телефон: <input type="text" name="phone">
+            </label>
+        </div>
+        
+        <div>
+            <label>
+                <input type="checkbox" name="is_manager">
+                Менеджер банка
+            </label>
+        </div>
+
+        <div>
+            <button type="submit">Создать пользователя</button>
+        </div>
+    </form>
+    <div>
+        <a href="/rgz/manage">Вернуться к списку пользователей</a>
+    </div>
+{% endblock %}

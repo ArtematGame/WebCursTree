@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block lab %}Личный кабинет{% endblock %}
+
+{% block main %}
+    <h1>Личный кабинет</h1>
+    
+    <div style="background: #f5f5f5; padding: 15px; margin: 15px 0;">
+        <p><strong>ФИО:</strong> {{ user.full_name }}</p>
+        <p><strong>Логин:</strong> {{ user.login }}</p>
+        <p><strong>Телефон:</strong> {{ user.phone }}</p>
+        <p><strong>Счет:</strong> {{ user.account }}</p>
+        <p><strong>Баланс:</strong> {{ user.balance }} руб.</p>
+        <p><strong>Статус:</strong> {% if user.is_manager %}Менеджер{% else %}Клиент{% endif %}</p>
+    </div>
+    
+    <div>
+        <a href="/rgz/transfer">Перевести деньги</a> |
+        <a href="/rgz/transactions">История операций</a> |
+        <a href="/rgz/">На главную</a>
+    </div>
+{% endblock %}

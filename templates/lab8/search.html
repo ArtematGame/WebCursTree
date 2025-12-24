@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block lab %}Поиск статей{% endblock %}
+
+{% block main %}
+    <h1>Поиск статей</h1>
+    
+    <div style="margin-bottom: 20px;">
+        <a href="/lab8/" class="button">К заданиям</a>
+        <a href="/lab8/articles/public/" class="button" style="margin-left: 10px;">Публичные статьи</a>
+        {% if login %}
+            <a href="/lab8/articles/" class="button" style="margin-left: 10px;">Мои статьи</a>
+        {% endif %}
+    </div>
+    
+    <form action="/lab8/articles/search/" method="post" style="margin-bottom: 20px;">
+        <div>
+            <label>
+                Поиск: <input type="text" name="search_query" value="{{ search_query }}" style="width: 300px;" placeholder="Введите текст для поиска...">
+            </label>
+            <button type="submit">Искать</button>
+        </div>
+    </form>
+    
+    {% if search_query %}
+        <h2>Результаты поиска для "{{ search_query }}":</h2>
+        
+        {% if articles %}
+            {% for article in articles %}
+                <div style="border: 1px solid #ccc; margin: 10px 0; padding: 10px;">
+                    <h3>{{ article.title }}</h3>
+                    <p>{{ article.article_text[:200] }}{% if article.article_text|length > 200 %}...{% endif %}</p>
+                    <small>
+                        Автор: {{ article.login_id }}
+                        {% if article.is_public %}
+                            <span style="color: green;">(Публичная)</span>
+                        {% else %}
+                            <span style="color: blue;">(Личная)</span>
+                        {% endif %}
+                    </small>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Статьи не найдены</p>
+        {% endif %}
+    {% else %}
+        <p>Введите поисковый запрос в поле выше</p>
+    {% endif %}
+{% endblock %}

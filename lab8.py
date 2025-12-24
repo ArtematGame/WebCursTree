@@ -21,7 +21,7 @@ def register():
     login_form = request.form.get('login')
     password_form = request.form.get('password')
 
-    # Проверка на пустые значения (Задание 2 из методички)
+    # Проверка на пустые значения
     if not login_form:
         return render_template('lab8/register.html',
                                error='Логин не может быть пустым')
@@ -30,19 +30,18 @@ def register():
         return render_template('lab8/register.html',
                                error='Пароль не может быть пустым')
 
-    # Поиск пользователя через ORM (методичка стр. 13)
+    # Поиск пользователя через
     login_exists = users.query.filter_by(login=login_form).first()
     if login_exists:
         return render_template('lab8/register.html',
                                error='Такой пользователь уже существует')
 
-    # Создание пользователя через ORM
     password_hash = generate_password_hash(password_form)
     new_user = users(login=login_form, password=password_hash)
     db.session.add(new_user)
     db.session.commit()
     
-    # ЗАДАНИЕ 2: Автоматический логин после регистрации
+    # Автоматический логин после регистрации
     login_user(new_user, remember=False)
     return redirect('/lab8/')
 
@@ -54,7 +53,7 @@ def login():
     login_form = request.form.get('login')
     password_form = request.form.get('password')
     
-    # ЗАДАНИЕ 3: Галочка "запомнить меня"
+    # Галочка "запомнить меня"
     remember_me = request.form.get('remember_me')
     
     # Проверка на пустые значения
@@ -66,11 +65,10 @@ def login():
         return render_template('lab8/login.html',
                                error='Пароль не может быть пустым')
 
-    # Поиск пользователя через ORM
     user = users.query.filter_by(login=login_form).first()
 
     if user and check_password_hash(user.password, password_form):
-        # ЗАДАНИЕ 3: remember=True если установлена галочка
+        # remember=True если установлена галочка
         remember = remember_me == 'on'
         login_user(user, remember=remember)
         return redirect('/lab8/')
@@ -121,7 +119,6 @@ def article_list():
 @lab8.route('/lab8/create/', methods=['GET', 'POST'])
 @login_required
 def create_article():
-    # ЗАДАНИЕ 4: Создание статьи
     if request.method == 'GET':
         return render_template('lab8/create.html')
     
@@ -137,7 +134,6 @@ def create_article():
         return render_template('lab8/create.html',
                                error='Текст статьи не может быть пустым')
     
-    # Создание статьи через ORM
     new_article = articles(
         login_id=current_user.id,
         title=title,
@@ -155,8 +151,6 @@ def create_article():
 @lab8.route('/lab8/edit/<int:article_id>', methods=['GET', 'POST'])
 @login_required
 def edit_article(article_id):
-    # ЗАДАНИЕ 5: Редактирование статьи
-    # Получение статьи через ORM
     article = articles.query.get_or_404(article_id)
     
     # Проверяем, принадлежит ли статья текущему пользователю
@@ -188,14 +182,13 @@ def edit_article(article_id):
 @lab8.route('/lab8/delete/<int:article_id>', methods=['POST'])
 @login_required
 def delete_article(article_id):
-    # ЗАДАНИЕ 6: Удаление статьи
+
     article = articles.query.get_or_404(article_id)
     
     # Проверяем, принадлежит ли статья текущему пользователю
     if article.login_id != current_user.id:
         abort(403)  # Запрещено
     
-    # Удаление статьи через ORM
     db.session.delete(article)
     db.session.commit()
     
