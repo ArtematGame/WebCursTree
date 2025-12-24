@@ -42,8 +42,8 @@ def init_database():
         try:
 
             cursor.execute(
-                "INSERT INTO users (id, login, password, full_name, phone, account,  balance, is_manager) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                (user_id, login, password_hash, full_name, phone, account, balance, is_manager)
+                "INSERT INTO users (login, password, full_name, phone, account, balance, is_manager) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (login, password_hash, full_name, phone, account, balance, is_manager)
             )
         
             
