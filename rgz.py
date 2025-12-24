@@ -87,7 +87,7 @@ def logout():
     session.pop('rgz_login', None)
     session.pop('rgz_user_id', None)
     session.pop('rgz_is_manager', None)
-    return render_template('rgz/logout.html')
+    return redirect('/rgz')
 
 @rgz.route('/rgz/dashboard')
 def dashboard():
