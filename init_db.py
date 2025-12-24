@@ -17,7 +17,6 @@ def init_database():
     
     # Данные для вставки
     users_to_insert = [
-        # (id, login, password, real_name, phone, account, balance, is_manager)
         (1, 'admin', 'admin123', 'Иванов Иван', '+79001112233', 'ADMIN001', 0, True),
         (2, 'client1', 'client123', 'Сидорова Анна', '+79003334455', 'ACC001', 1000, False),
         (3, 'client2', 'client123', 'Кузнецов Сергей', '+79004445566', 'ACC002', 1000, False),
@@ -35,7 +34,7 @@ def init_database():
     print("Начинаем заполнение базы данных...")
     
     for user_data in users_to_insert:
-        user_id, login, password, real_name, phone, account, balance, is_manager = user_data
+        user_id, login, password, full_name, phone, account, balance, is_manager = user_data
         
         # Хешируем пароль
         password_hash = hashlib.sha256(password.encode()).hexdigest()
@@ -43,8 +42,8 @@ def init_database():
         try:
 
             cursor.execute(
-                "INSERT INTO users (id, login, password, full_name, phone, account,  balance, is_manager) VALUES (?, ?, ?, ?)",
-                (user_id, login, password_hash, real_name, phone, account, balance, is_manager)
+                "INSERT INTO users (id, login, password, full_name, phone, account,  balance, is_manager) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (user_id, login, password_hash, full_name, phone, account, balance, is_manager)
             )
         
             
