@@ -2,37 +2,82 @@
 
 {% block lab %}История операций{% endblock %}
 
+{% block script %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentUser = null;
+    
+    // Сначала загружаем информацию о пользователе
+    loadUserInfo()
+        .then(function(user) {
+            if (!user) {
+                window.location.href = '/rgz/login';
+                return;
+            }
+            
+            currentUser = user;
+            
+            // Затем загружаем транзакции
+            return loadTransactions();
+        })
+        .then(function(transactions) {
+            const transactionsTable = document.getElementById('transactions-table');
+            const loadingDiv = document.getElementById('loading');
+            
+            if (!transactions || transactions.length === 0) {
+                loadingDiv.innerHTML = '<p>У вас еще нет операций</p>';
+                return;
+            }
+            
+            let html = `
+                <table border="1" style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <th>От кого</th>
+                        <th>Кому</th>
+                        <th>Сумма</th>
+                        <th>Описание</th>
+                        <th>Дата</th>
+                    </tr>
+            `;
+            
+            transactions.forEach(function(t) {
+                const isOutgoing = t.from_account === currentUser.account;
+                const amountColor = isOutgoing ? 'red' : 'green';
+                const amountSign = isOutgoing ? '-' : '+';
+                
+                html += `
+                    <tr>
+                        <td>${t.from_account || '-'}</td>
+                        <td>${t.to_account}</td>
+                        <td style="color: ${amountColor}; font-weight: bold;">
+                            ${amountSign}${t.amount} руб.
+                        </td>
+                        <td>${t.description || '-'}</td>
+                        <td>${new Date(t.created_at).toLocaleString()}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</table>';
+            transactionsTable.innerHTML = html;
+            loadingDiv.style.display = 'none';
+            transactionsTable.style.display = 'block';
+        })
+        .catch(function(error) {
+            console.error('Error loading transactions:', error);
+            document.getElementById('loading').textContent = 'Ошибка загрузки операций';
+        });
+});
+</script>
+{% endblock %}
+
 {% block main %}
     <h1>История операций</h1>
     
-    {% if transactions %}
-        <table border="1" style="width: 100%;">
-            <tr>
-                <th>От кого</th>
-                <th>Кому</th>
-                <th>Сумма</th>
-                <th>Описание</th>
-            </tr>
-            {% for t in transactions %}
-            <tr>
-                <td>{{ t.from_account or '-' }}</td>
-                <td>{{ t.to_account }}</td>
-                <td>
-                    {% if t.from_account == user.account %}
-                        <span style="color: red;">-{{ t.amount }} руб.</span>
-                    {% else %}
-                        <span style="color: green;">+{{ t.amount }} руб.</span>
-                    {% endif %}
-                </td>
-                <td>{{ t.description or '-' }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    {% else %}
-        <p>У вас еще нет операций</p>
-    {% endif %}
+    <div id="loading">Загрузка операций...</div>
+    <div id="transactions-table" style="display: none;"></div>
     
-    <div>
+    <div style="margin-top: 20px;">
         <a href="/rgz/dashboard">Вернуться в личный кабинет</a>
     </div>
 {% endblock %}

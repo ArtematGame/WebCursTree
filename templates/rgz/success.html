@@ -1,12 +1,24 @@
 {% extends "base.html" %}
 
-{% block lab %}Банковская система{% endblock %}
+{% block lab %}Успешно{% endblock %}
+
+{% block script %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Получаем сообщение из URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get('message') || 'Операция выполнена успешно!';
+    
+    document.getElementById('success-message').textContent = decodeURIComponent(message);
+});
+</script>
+{% endblock %}
 
 {% block main %}
     <div>
         <h1>Операция выполнена успешно!</h1>
         
-        <p>{{ message }}</p>
+        <p id="success-message"></p>
 
         <div>
             <a href="/rgz/dashboard">Перейти в личный кабинет</a>

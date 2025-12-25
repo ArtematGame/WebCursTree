@@ -1,24 +1,51 @@
 {% extends "base.html" %}
 
-{% block lab %}РГЗ{% endblock %}
+{% block lab %}Вход в систему{% endblock %}
+
+{% block script %}
+<script>
+function handleLogin() {
+    const login = document.getElementById('login-input').value;
+    const password = document.getElementById('password-input').value;
+    const errorDiv = document.getElementById('error-message');
+    
+    errorDiv.style.display = 'none';
+    
+    if (!login || !password) {
+        errorDiv.textContent = 'Заполните все поля';
+        errorDiv.style.display = 'block';
+        return;
+    }
+    
+    performLogin(login, password)
+        .then(function(result) {
+            if (result.success) {
+                window.location.href = '/rgz/dashboard';
+            }
+        })
+        .catch(function(error) {
+            errorDiv.textContent = 'Ошибка входа: ' + error.message;
+            errorDiv.style.display = 'block';
+        });
+}
+</script>
+{% endblock %}
 
 {% block main %}
     <h1>Вход в систему</h1>
     
-    {% if error %}
-        <div class="error">{{ error }}</div>
-    {% endif %}
+    <div id="error-message" class="error" style="display: none;"></div>
 
-    <form action="/rgz/login" method="post"> 
+    <form onsubmit="event.preventDefault(); handleLogin();">
         <div>
             <label>
-                Логин: <input type="text" name="login">
+                Логин: <input type="text" id="login-input">
             </label>
         </div>
 
         <div>
             <label>
-                Пароль: <input type="password" name="password">
+                Пароль: <input type="password" id="password-input">
             </label>
         </div>
 
@@ -26,7 +53,8 @@
             <button type="submit">Вход</button>
         </div>
     </form>
+    
     <div>
-        <a href="/rgz">Вернуться к заданиям</a>
+        <a href="/rgz">Вернуться на главную</a>
     </div>
 {% endblock %}

@@ -5,7 +5,6 @@ import hashlib
 rgz = Blueprint('rgz', __name__)
 
 def get_db():
-    """Получает соединение с базой данных"""
     # Используйте правильный путь к базе данных
     db_path = '/home/Artemat/WebCursTree/sqlite3/database.db'
     
@@ -14,13 +13,11 @@ def get_db():
     return conn
 
 def hash_password(password):
-    """Хеширует пароль"""
     return hashlib.sha256(password.encode()).hexdigest()
 
 # Основные маршруты
 @rgz.route('/rgz')
 def index():
-    """Главная страница банка"""
     user = None
     if 'rgz_login' in session:
         conn = get_db()
@@ -39,7 +36,6 @@ def index():
 
 @rgz.route('/rgz/login', methods=['GET', 'POST'])
 def login():
-    """Вход в банк"""
     if request.method == 'GET':
         return render_template('rgz/login.html')
     
@@ -57,11 +53,13 @@ def login():
         "SELECT * FROM users WHERE login = ?",
         (login_input,)
     )
-    
-    user_data = cursor.fetchone()  # <-- Вот здесь получаем данные
+
+    # получаем данные
+    user_data = cursor.fetchone()
     conn.close()
     
-    if not user_data:  # <-- Проверяем, нашли ли пользователя
+    # Проверяем, нашли ли пользователя
+    if not user_data:
         return render_template('rgz/login.html', error='Неверный логин или пароль')
     
     # Преобразуем строку Row в словарь
@@ -83,7 +81,6 @@ def login():
 
 @rgz.route('/rgz/logout')
 def logout():
-    """Выход из банка"""
     session.pop('rgz_login', None)
     session.pop('rgz_user_id', None)
     session.pop('rgz_is_manager', None)
@@ -91,7 +88,6 @@ def logout():
 
 @rgz.route('/rgz/dashboard')
 def dashboard():
-    """Личный кабинет"""
     if 'rgz_login' not in session:
         return render_template('rgz/login.html', error='Требуется авторизация')
     
@@ -114,7 +110,7 @@ def dashboard():
 
 @rgz.route('/rgz/transfer', methods=['GET', 'POST'])
 def transfer():
-    """Перевод денег"""
+    # Перевод денег
     if 'rgz_login' not in session:
         return render_template('rgz/login.html', error='Требуется авторизация')
     
@@ -212,7 +208,7 @@ def transfer():
 
 @rgz.route('/rgz/transactions')
 def transactions():
-    """История транзакций"""
+    # История транзакций
     if 'rgz_login' not in session:
         return render_template('rgz/login.html', error='Требуется авторизация')
     
@@ -249,7 +245,7 @@ def transactions():
 
 @rgz.route('/rgz/manage')
 def manage():
-    """Управление пользователями (для менеджеров)"""
+    # Управление пользователями (для менеджеров)
     if 'rgz_login' not in session or not session.get('rgz_is_manager'):
         return render_template('rgz/login.html', error='Требуется авторизация менеджера')
     
@@ -283,7 +279,7 @@ def manage():
 
 @rgz.route('/rgz/create_user', methods=['GET', 'POST'])
 def create_user():
-    """Создание пользователя (для менеджеров)"""
+    # Создание пользователя (для менеджеров)
     if 'rgz_login' not in session or not session.get('rgz_is_manager'):
         return render_template('rgz/login.html', error='Требуется авторизация менеджера')
     
@@ -359,7 +355,6 @@ def create_user():
 # JSON-RPC API
 @rgz.route('/rgz/api', methods=['POST'])
 def api():
-    """Простой JSON-RPC API"""
     try:
         data = request.get_json()
         method = data.get('method')
@@ -469,7 +464,6 @@ def api():
             
             return jsonify({'result': 'Transfer successful'})
         
-        # === ДОБАВЛЕННЫЕ МЕТОДЫ ===
         elif method == 'user.get_info':
             if 'rgz_login' not in session:
                 return jsonify({'error': 'Unauthorized'})

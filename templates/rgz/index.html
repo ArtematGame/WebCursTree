@@ -2,35 +2,79 @@
 
 {% block lab %}Банковская система{% endblock %}
 
-{% block main %}
-    <h1>Банковская система</h1>
+{% block script %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const userSection = document.getElementById('user-section');
+    const loginSection = document.getElementById('login-section');
     
-    {% if user %}
-        <div>
-            <p>Добро пожаловать, {{ user.full_name }}!</p>
-            <p>Ваш счет: {{ user.account }}</p>
-            <p>Баланс: {{ user.balance }} руб.</p>    
-        </div>
-        
-        <div>
-            <a href="/rgz/dashboard">Личный кабинет</a> |
-            <a href="/rgz/transfer">Перевод денег</a> |
-            <a href="/rgz/transactions">История операций</a>
-            {% if user.is_manager %}
-                | <a href="/rgz/manage">Управление пользователями</a>
-                | <a href="/rgz/create_user">Создать пользователя</a>
-            {% endif %}
-            | <a href="/rgz/logout">Выйти</a>
-        </div>
-    {% else %}
+    // Проверяем авторизацию
+    loadUserInfo()
+        .then(function(user) {
+            if (user) {
+                // Пользователь авторизован
+                userSection.innerHTML = `
+                    <h1>Банковская система</h1>
+                    <div style="background: #f5f5f5; padding: 15px; margin: 15px 0; border-radius: 5px;">
+                        <p>Добро пожаловать, ${user.full_name}!</p>
+                        <p><strong>Счет:</strong> ${user.account}</p>
+                        <p><strong>Баланс:</strong> ${user.balance} руб.</p>    
+                    </div>
+                    
+                    <div>
+                        <a href="/rgz/dashboard" style="margin-right: 10px;">Личный кабинет</a>
+                        <a href="/rgz/transfer" style="margin-right: 10px;">Перевод денег</a>
+                        <a href="/rgz/transactions" style="margin-right: 10px;">История операций</a>
+                        ${user.is_manager ? '<a href="/rgz/manage" style="margin-right: 10px;">Управление пользователями</a>' : ''}
+                        <button onclick="performLogout().then(() => window.location.reload())" style="margin-left: 10px;">Выйти</button>
+                    </div>
+                `;
+                loginSection.style.display = 'none';
+            } else {
+                // Пользователь не авторизован
+                userSection.style.display = 'none';
+                loginSection.style.display = 'block';
+            }
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            userSection.style.display = 'none';
+            loginSection.style.display = 'block';
+        });
+    
+    // Загружаем тестовых пользователей
+    callRpcMethod('get_public_info')
+        .then(function(data) {
+            const usersList = document.getElementById('test-users-list');
+            if (usersList && data.test_users) {
+                usersList.innerHTML = '';
+                data.test_users.forEach(function(user) {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${user.full_name}</strong> - логин: ${user.login}, пароль: ${user.is_manager ? 'admin123' : 'client123'}`;
+                    usersList.appendChild(li);
+                });
+            }
+        })
+        .catch(function(error) {
+            console.error('Failed to load test users:', error);
+        });
+});
+</script>
+{% endblock %}
+
+{% block main %}
+    <div id="user-section">
+        <!-- Сюда загрузится информация об авторизованном пользователе -->
+    </div>
+    
+    <div id="login-section" style="display: none;">
+        <h1>Банковская система</h1>
         <p>Для работы с банковской системой необходимо войти в систему.</p>
         <p><a href="/rgz/login">Войти в систему</a></p>
         
         <h3>Тестовые пользователи:</h3>
-        <ul>
-            <li>Менеджер: admin / admin123</li>
-            <li>Клиент: client1 / client123</li>
-            <li>Клиент: client2 / client123</li>
+        <ul id="test-users-list">
+            <!-- Список будет загружен через JavaScript -->
         </ul>
-    {% endif %}
+    </div>
 {% endblock %}

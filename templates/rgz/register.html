@@ -1,33 +1,78 @@
 {% extends "base.html" %}
 
-{% block lab %}Лабораторная работа 9{% endblock %}
+{% block lab %}Регистрация{% endblock %}
+
+{% block script %}
+<script>
+function handleRegister() {
+    const fullName = document.getElementById('full-name').value;
+    const login = document.getElementById('login').value;
+    const password = document.getElementById('password').value;
+    const phone = document.getElementById('phone').value;
+    const errorDiv = document.getElementById('error-message');
+    
+    errorDiv.style.display = 'none';
+    
+    if (!fullName || !login || !password) {
+        errorDiv.textContent = 'Заполните все обязательные поля';
+        errorDiv.style.display = 'block';
+        return;
+    }
+    
+    callRpcMethod('register', {
+        full_name: fullName,
+        login: login,
+        password: password,
+        phone: phone
+    })
+    .then(function(result) {
+        alert(result.message);
+        window.location.href = '/rgz/login';
+    })
+    .catch(function(error) {
+        errorDiv.textContent = 'Ошибка регистрации: ' + error.message;
+        errorDiv.style.display = 'block';
+    });
+}
+</script>
+{% endblock %}
 
 {% block main %}
     <h1>Регистрация</h1>
 
-    {% if error %}
-        <div style="color: red; font-weight: bold; margin-bottom: 10px;">
-            {{ error }}
-        </div>
-    {% endif %}
+    <div id="error-message" class="error" style="display: none;"></div>
 
-    <form action="/lab9/register" method="post">
+    <form onsubmit="event.preventDefault(); handleRegister();">
         <div>
             <label>
-                Логин: <input type="text" name="login">
+                ФИО: <input type="text" id="full-name">
             </label>
         </div>
 
         <div>
             <label>
-                Пароль: <input type="password" name="password">
+                Логин: <input type="text" id="login">
             </label>
         </div>
+        
+        <div>
+            <label>
+                Пароль: <input type="password" id="password">
+            </label>
+        </div>
+        
+        <div>
+            <label>
+                Телефон: <input type="text" id="phone">
+            </label>
+        </div>
+
         <div>
             <button type="submit">Зарегистрироваться</button>
         </div>
     </form>
+    
     <div>
-        <a href="/rgz/">Вернуться к заданиям</a>
+        <a href="/rgz">Вернуться на главную</a>
     </div>
 {% endblock %}

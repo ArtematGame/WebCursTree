@@ -2,43 +2,95 @@
 
 {% block lab %}Создание пользователя{% endblock %}
 
+{% block script %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Проверяем, является ли пользователь менеджером
+    loadUserInfo()
+        .then(function(user) {
+            if (!user) {
+                window.location.href = '/rgz/login';
+                return;
+            }
+            
+            if (!user.is_manager) {
+                alert('Доступ запрещен. Требуются права менеджера.');
+                window.location.href = '/rgz/dashboard';
+                return;
+            }
+        })
+        .catch(function(error) {
+            window.location.href = '/rgz/login';
+        });
+});
+
+function handleCreateUser() {
+    const fullName = document.getElementById('full-name').value;
+    const login = document.getElementById('login').value;
+    const password = document.getElementById('password').value;
+    const phone = document.getElementById('phone').value;
+    const isManager = document.getElementById('is-manager').checked;
+    const errorDiv = document.getElementById('error-message');
+    
+    errorDiv.style.display = 'none';
+    
+    if (!fullName || !login || !password) {
+        errorDiv.textContent = 'Заполните все обязательные поля';
+        errorDiv.style.display = 'block';
+        return;
+    }
+    
+    createUser({
+        full_name: fullName,
+        login: login,
+        password: password,
+        phone: phone,
+        is_manager: isManager
+    })
+    .then(function(result) {
+        window.location.href = '/rgz/success?message=' + encodeURIComponent(result.message);
+    })
+    .catch(function(error) {
+        errorDiv.textContent = 'Ошибка создания пользователя: ' + error.message;
+        errorDiv.style.display = 'block';
+    });
+}
+</script>
+{% endblock %}
+
 {% block main %}
     <h1>Создание нового пользователя</h1>
     
-    {% if error %}
-        <div style="color: red; font-weight: bold; margin-bottom: 10px;">
-            {{ error }}
-        </div>
-    {% endif %}
+    <div id="error-message" class="error" style="display: none;"></div>
 
-    <form action="/rgz/create_user" method="post">
+    <form onsubmit="event.preventDefault(); handleCreateUser();">
         <div>
             <label>
-                ФИО: <input type="text" name="full_name">
+                ФИО: <input type="text" id="full-name">
             </label>
         </div>
 
         <div>
             <label>
-                Логин: <input type="text" name="login">
+                Логин: <input type="text" id="login">
             </label>
         </div>
         
         <div>
             <label>
-                Пароль: <input type="password" name="password">
+                Пароль: <input type="password" id="password">
             </label>
         </div>
         
         <div>
             <label>
-                Телефон: <input type="text" name="phone">
+                Телефон: <input type="text" id="phone">
             </label>
         </div>
         
         <div>
             <label>
-                <input type="checkbox" name="is_manager">
+                <input type="checkbox" id="is-manager">
                 Менеджер банка
             </label>
         </div>
@@ -47,7 +99,8 @@
             <button type="submit">Создать пользователя</button>
         </div>
     </form>
-    <div>
+    
+    <div style="margin-top: 20px;">
         <a href="/rgz/manage">Вернуться к списку пользователей</a>
     </div>
 {% endblock %}
