@@ -1,241 +1,476 @@
-from flask import Blueprint, render_template, request, redirect, session, jsonify
+from flask import Blueprint, render_template, request, redirect, session, current_app, jsonify
 import sqlite3
 import hashlib
 
 rgz = Blueprint('rgz', __name__)
 
 def get_db():
+    """Получает соединение с базой данных"""
+    # Используйте правильный путь к базе данных
     db_path = '/home/Artemat/WebCursTree/sqlite3/database.db'
+    
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     return conn
 
-def hash_password(p):
-    return hashlib.sha256(p.encode()).hexdigest()
+def hash_password(password):
+    """Хеширует пароль"""
+    return hashlib.sha256(password.encode()).hexdigest()
 
-def get_user():
-    if 'rgz_login' not in session:
-        return None
-    conn = get_db()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM users WHERE login = ?", (session['rgz_login'],))
-    user = cur.fetchone()
-    conn.close()
-    return dict(user) if user else None
-
-# HTML страницы
+# Основные маршруты
 @rgz.route('/rgz')
 def index():
-    return render_template('rgz/index.html', user=get_user())
+    """Главная страница банка"""
+    user = None
+    if 'rgz_login' in session:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT * FROM users WHERE login = ?",
+            (session['rgz_login'],)
+        )
+        user_data = cursor.fetchone()
+        conn.close()
+        
+        if user_data:
+            user = dict(user_data)
+    
+    return render_template('rgz/index.html', user=user)
 
 @rgz.route('/rgz/login', methods=['GET', 'POST'])
-def login_page():
+def login():
+    """Вход в банк"""
     if request.method == 'GET':
         return render_template('rgz/login.html')
+    
+    login_input = request.form.get('login')
+    password_input = request.form.get('password')
+    
+    if not login_input or not password_input:
+        return render_template('rgz/login.html', error='Заполните все поля')
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # Получаем пользователя по логину
+    cursor.execute(
+        "SELECT * FROM users WHERE login = ?",
+        (login_input,)
+    )
+    
+    user_data = cursor.fetchone()  # <-- Вот здесь получаем данные
+    conn.close()
+    
+    if not user_data:  # <-- Проверяем, нашли ли пользователя
+        return render_template('rgz/login.html', error='Неверный логин или пароль')
+    
+    # Преобразуем строку Row в словарь
+    user = dict(user_data)
+    
+    # Хешируем введенный пароль для сравнения
+    hashed_password = hashlib.sha256(password_input.encode()).hexdigest()
+    
+    # Сравниваем хеши
+    if user['password'] != hashed_password:
+        return render_template('rgz/login.html', error='Неверный логин или пароль')
+    
+    # Сохраняем в сессии
+    session['rgz_login'] = user['login']
+    session['rgz_user_id'] = user['id']
+    session['rgz_is_manager'] = bool(user['is_manager'])
+    
+    return redirect('/rgz/dashboard')
+
+@rgz.route('/rgz/logout')
+def logout():
+    """Выход из банка"""
+    session.pop('rgz_login', None)
+    session.pop('rgz_user_id', None)
+    session.pop('rgz_is_manager', None)
     return redirect('/rgz')
 
 @rgz.route('/rgz/dashboard')
 def dashboard():
-    user = get_user()
-    return render_template('rgz/dashboard.html', user=user) if user else redirect('/rgz/login')
+    """Личный кабинет"""
+    if 'rgz_login' not in session:
+        return render_template('rgz/login.html', error='Требуется авторизация')
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT * FROM users WHERE login = ?",
+        (session['rgz_login'],)
+    )
+    
+    user_data = cursor.fetchone()
+    conn.close()
+    
+    if not user_data:
+        return render_template('rgz/login.html', error='Пользователь не найден')
+    
+    user = dict(user_data)
+    
+    return render_template('rgz/dashboard.html', user=user)
 
-@rgz.route('/rgz/transfer')
-def transfer_page():
-    user = get_user()
-    return render_template('rgz/transfer.html', user=user) if user else redirect('/rgz/login')
+@rgz.route('/rgz/transfer', methods=['GET', 'POST'])
+def transfer():
+    """Перевод денег"""
+    if 'rgz_login' not in session:
+        return render_template('rgz/login.html', error='Требуется авторизация')
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # Получаем текущего пользователя
+    cursor.execute(
+        "SELECT * FROM users WHERE login = ?",
+        (session['rgz_login'],)
+    )
+    
+    user_data = cursor.fetchone()
+    if not user_data:
+        conn.close()
+        return render_template('rgz/login.html', error='Пользователь не найден')
+    
+    user = dict(user_data)
+    
+    if request.method == 'GET':
+        conn.close()
+        return render_template('rgz/transfer.html', user=user)
+    
+    # Обработка перевода
+    to_account = request.form.get('to_account')
+    amount = request.form.get('amount')
+    description = request.form.get('description', '')
+    
+    if not to_account or not amount:
+        conn.close()
+        return render_template('rgz/transfer.html', user=user, error='Заполните все обязательные поля')
+    
+    try:
+        amount = float(amount)
+        if amount <= 0:
+            raise ValueError
+    except:
+        conn.close()
+        return render_template('rgz/transfer.html', user=user, error='Неверная сумма')
+    
+    # Проверяем баланс
+    if user['balance'] < amount:
+        conn.close()
+        return render_template('rgz/transfer.html', user=user, error='Недостаточно средств')
+    
+    # Ищем получателя
+    cursor.execute(
+        "SELECT * FROM users WHERE account = ? OR phone = ?",
+        (to_account, to_account)
+    )
+    
+    recipient_data = cursor.fetchone()
+    if not recipient_data:
+        conn.close()
+        return render_template('rgz/transfer.html', user=user, error='Получатель не найден')
+    
+    recipient = dict(recipient_data)
+    
+    if recipient['id'] == user['id']:
+        conn.close()
+        return render_template('rgz/transfer.html', user=user, error='Нельзя перевести самому себе')
+    
+    # Выполняем перевод
+    new_sender_balance = user['balance'] - amount
+    new_recipient_balance = recipient['balance'] + amount
+    
+    cursor.execute(
+        "UPDATE users SET balance = ? WHERE id = ?",
+        (new_sender_balance, user['id'])
+    )
+    
+    cursor.execute(
+        "UPDATE users SET balance = ? WHERE id = ?",
+        (new_recipient_balance, recipient['id'])
+    )
+    
+    # Записываем транзакцию (если есть таблица transactions)
+    try:
+        cursor.execute(
+            "INSERT INTO transactions (from_account, to_account, amount, description) VALUES (?, ?, ?, ?)",
+            (user['account'], recipient['account'], amount, description)
+        )
+    except:
+        pass  # Если таблицы нет, просто пропускаем
+    
+    conn.commit()
+    conn.close()
+    
+    # Обновляем баланс пользователя для отображения
+    user['balance'] = new_sender_balance
+    
+    return render_template('rgz/success.html', 
+                         message=f'Перевод на сумму {amount} руб. выполнен успешно!',
+                         login=user['login'])
 
 @rgz.route('/rgz/transactions')
-def transactions_page():
-    user = get_user()
-    return render_template('rgz/transactions.html', user=user) if user else redirect('/rgz/login')
+def transactions():
+    """История транзакций"""
+    if 'rgz_login' not in session:
+        return render_template('rgz/login.html', error='Требуется авторизация')
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # Получаем текущего пользователя
+    cursor.execute(
+        "SELECT * FROM users WHERE login = ?",
+        (session['rgz_login'],)
+    )
+    
+    user_data = cursor.fetchone()
+    if not user_data:
+        conn.close()
+        return render_template('rgz/login.html', error='Пользователь не найден')
+    
+    user = dict(user_data)
+    
+    # Получаем транзакции (если таблица есть)
+    try:
+        cursor.execute(
+            "SELECT * FROM transactions WHERE from_account = ? OR to_account = ? ORDER BY created_at DESC",
+            (user['account'], user['account'])
+        )
+        transactions_data = cursor.fetchall()
+        transactions = [dict(t) for t in transactions_data]
+    except:
+        transactions = []
+    
+    conn.close()
+    
+    return render_template('rgz/transactions.html', user=user, transactions=transactions)
 
 @rgz.route('/rgz/manage')
-def manage_page():
-    user = get_user()
-    if not user or not user['is_manager']:
-        return redirect('/rgz/login')
-    return render_template('rgz/manage.html', user=user)
+def manage():
+    """Управление пользователями (для менеджеров)"""
+    if 'rgz_login' not in session or not session.get('rgz_is_manager'):
+        return render_template('rgz/login.html', error='Требуется авторизация менеджера')
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # Получаем текущего пользователя
+    cursor.execute(
+        "SELECT * FROM users WHERE login = ?",
+        (session['rgz_login'],)
+    )
+    
+    user_data = cursor.fetchone()
+    if not user_data:
+        conn.close()
+        return render_template('rgz/login.html', error='Пользователь не найден')
+    
+    user = dict(user_data)
+    
+    # Получаем всех пользователей
+    cursor.execute(
+        "SELECT id, full_name, login, phone, account, balance, is_manager FROM users ORDER BY id"
+    )
+    
+    users_data = cursor.fetchall()
+    all_users = [dict(u) for u in users_data]
+    
+    conn.close()
+    
+    return render_template('rgz/manage.html', user=user, users=all_users)
 
-@rgz.route('/rgz/create_user')
-def create_user_page():
-    user = get_user()
-    if not user or not user['is_manager']:
-        return redirect('/rgz/login')
-    return render_template('rgz/create_user.html', user=user)
+@rgz.route('/rgz/create_user', methods=['GET', 'POST'])
+def create_user():
+    """Создание пользователя (для менеджеров)"""
+    if 'rgz_login' not in session or not session.get('rgz_is_manager'):
+        return render_template('rgz/login.html', error='Требуется авторизация менеджера')
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    # Получаем текущего пользователя
+    cursor.execute(
+        "SELECT * FROM users WHERE login = ?",
+        (session['rgz_login'],)
+    )
+    
+    user_data = cursor.fetchone()
+    if not user_data:
+        conn.close()
+        return render_template('rgz/login.html', error='Пользователь не найден')
+    
+    user = dict(user_data)
+    
+    if request.method == 'GET':
+        conn.close()
+        return render_template('rgz/create_user.html', user=user)
+    
+    # Обработка создания пользователя
+    full_name = request.form.get('full_name')
+    login = request.form.get('login')
+    password = request.form.get('password')
+    phone = request.form.get('phone')
+    is_manager = request.form.get('is_manager') == 'on'
+    
+    # Проверяем обязательные поля
+    if not all([full_name, login, password]):
+        conn.close()
+        return render_template('rgz/create_user.html', user=user,
+                             error='Заполните все обязательные поля')
+    
+    # Проверяем, существует ли логин
+    cursor.execute(
+        "SELECT id FROM users WHERE login = ?",
+        (login,)
+    )
+    
+    if cursor.fetchone():
+        conn.close()
+        return render_template('rgz/create_user.html', user=user,
+                             error='Пользователь с таким логином уже существует')
+    
+    # Хешируем пароль
+    password_hash = hash_password(password)
+    
+    # Генерируем номер счета
+    cursor.execute("SELECT COUNT(*) as count FROM users")
+    count = cursor.fetchone()[0]
+    account = f'ACC{count + 100:03d}'
+    
+    # Баланс по умолчанию
+    balance = 1000 if not is_manager else 0
+    
+    # Создаем нового пользователя
+    cursor.execute(
+        """INSERT INTO users (full_name, login, password, phone, account, balance, is_manager) 
+           VALUES (?, ?, ?, ?, ?, ?, ?)""",
+        (full_name, login, password_hash, phone, account, balance, is_manager)
+    )
+    
+    conn.commit()
+    conn.close()
+    
+    return render_template('rgz/success.html', 
+                         message=f'Пользователь {full_name} успешно создан!',
+                         login=user['login'])
 
-@rgz.route('/rgz/logout')
-def logout():
-    session.clear()
-    return redirect('/rgz')
-
-# JSON-RPC API (главное по заданию)
+# JSON-RPC API
 @rgz.route('/rgz/api', methods=['POST'])
 def api():
+    """Простой JSON-RPC API"""
     try:
         data = request.get_json()
         method = data.get('method')
-        params = data.get('params', {})
-        req_id = data.get('id', 1)
         
-        # Авторизация
-        if method == 'auth.login':
-            login = params.get('login')
-            password = params.get('password')
-            if not login or not password:
-                return error_response('Missing credentials', req_id)
+        if method == 'get_balance':
+            if 'rgz_login' not in session:
+                return jsonify({'error': 'Unauthorized'})
             
             conn = get_db()
-            cur = conn.cursor()
-            cur.execute("SELECT * FROM users WHERE login = ?", (login,))
-            user = cur.fetchone()
+            cursor = conn.cursor()
+            
+            cursor.execute(
+                "SELECT balance FROM users WHERE login = ?",
+                (session['rgz_login'],)
+            )
+            
+            user_data = cursor.fetchone()
             conn.close()
             
-            if not user or hash_password(password) != dict(user)['password']:
-                return error_response('Invalid login/password', req_id)
+            if not user_data:
+                return jsonify({'error': 'User not found'})
             
-            user_dict = dict(user)
-            session['rgz_login'] = user_dict['login']
-            session['rgz_is_manager'] = user_dict['is_manager']
-            
-            return json_response({'success': True, 'user': user_dict['login']}, req_id)
+            return jsonify({'result': user_data['balance']})
         
-        # Проверка авторизации для остальных методов
-        if 'rgz_login' not in session:
-            return error_response('Unauthorized', req_id)
-        
-        user = get_user()
-        
-        # Баланс
-        if method == 'user.get_balance':
-            return json_response({'balance': user['balance']}, req_id)
-        
-        # Информация о пользователе
-        elif method == 'user.get_info':
-            user_copy = user.copy()
-            user_copy.pop('password', None)
-            return json_response({'user': user_copy}, req_id)
-        
-        # Перевод
         elif method == 'transfer':
-            to_acc = params.get('to_account')
-            amount = params.get('amount')
-            desc = params.get('description', '')
+            if 'rgz_login' not in session:
+                return jsonify({'error': 'Unauthorized'})
             
-            if not to_acc or not amount:
-                return error_response('Missing parameters', req_id)
+            conn = get_db()
+            cursor = conn.cursor()
+            
+            # Получаем отправителя
+            cursor.execute(
+                "SELECT * FROM users WHERE login = ?",
+                (session['rgz_login'],)
+            )
+            
+            user_data = cursor.fetchone()
+            if not user_data:
+                conn.close()
+                return jsonify({'error': 'User not found'})
+            
+            user = dict(user_data)
+            
+            params = data.get('params', {})
+            to_account = params.get('to_account')
+            amount = params.get('amount')
+            
+            # Простая проверка
+            if not to_account or not amount:
+                conn.close()
+                return jsonify({'error': 'Missing parameters'})
             
             try:
                 amount = float(amount)
-                if amount <= 0:
-                    raise ValueError
             except:
-                return error_response('Invalid amount', req_id)
-            
-            if user['balance'] < amount:
-                return error_response('Insufficient funds', req_id)
-            
-            conn = get_db()
-            cur = conn.cursor()
+                conn.close()
+                return jsonify({'error': 'Invalid amount'})
             
             # Ищем получателя
-            cur.execute("SELECT * FROM users WHERE account = ? OR phone = ?", (to_acc, to_acc))
-            recipient = cur.fetchone()
-            if not recipient:
-                conn.close()
-                return error_response('Recipient not found', req_id)
+            cursor.execute(
+                "SELECT * FROM users WHERE account = ?",
+                (to_account,)
+            )
             
-            recipient = dict(recipient)
+            recipient_data = cursor.fetchone()
+            if not recipient_data:
+                conn.close()
+                return jsonify({'error': 'Recipient not found'})
+            
+            recipient = dict(recipient_data)
+            
             if recipient['id'] == user['id']:
                 conn.close()
-                return error_response('Cannot transfer to yourself', req_id)
+                return jsonify({'error': 'Cannot transfer to yourself'})
+            
+            if user['balance'] < amount:
+                conn.close()
+                return jsonify({'error': 'Insufficient funds'})
             
             # Выполняем перевод
-            new_sender = user['balance'] - amount
-            new_recipient = recipient['balance'] + amount
+            new_sender_balance = user['balance'] - amount
+            new_recipient_balance = recipient['balance'] + amount
             
-            cur.execute("UPDATE users SET balance = ? WHERE id = ?", (new_sender, user['id']))
-            cur.execute("UPDATE users SET balance = ? WHERE id = ?", (new_recipient, recipient['id']))
+            cursor.execute(
+                "UPDATE users SET balance = ? WHERE id = ?",
+                (new_sender_balance, user['id'])
+            )
             
-            # История операций
+            cursor.execute(
+                "UPDATE users SET balance = ? WHERE id = ?",
+                (new_recipient_balance, recipient['id'])
+            )
+            
+            # Записываем транзакцию
+            description = params.get('description', '')
             try:
-                cur.execute("INSERT INTO transactions (from_account, to_account, amount, description) VALUES (?, ?, ?, ?)",
-                          (user['account'], recipient['account'], amount, desc))
+                cursor.execute(
+                    "INSERT INTO transactions (from_account, to_account, amount, description) VALUES (?, ?, ?, ?)",
+                    (user['account'], recipient['account'], amount, description)
+                )
             except:
                 pass
             
             conn.commit()
             conn.close()
             
-            return json_response({'success': True, 'new_balance': new_sender}, req_id)
-        
-        # История операций
-        elif method == 'transactions.get':
-            conn = get_db()
-            cur = conn.cursor()
-            try:
-                cur.execute("SELECT * FROM transactions WHERE from_account = ? OR to_account = ? ORDER BY created_at DESC",
-                          (user['account'], user['account']))
-                transactions = [dict(t) for t in cur.fetchall()]
-            except:
-                transactions = []
-            conn.close()
-            return json_response({'transactions': transactions}, req_id)
-        
-        # Менеджерские методы
-        elif method == 'users.get_all':
-            if not user['is_manager']:
-                return error_response('Manager access required', req_id)
-            
-            conn = get_db()
-            cur = conn.cursor()
-            cur.execute("SELECT id, full_name, login, phone, account, balance, is_manager FROM users")
-            users = [dict(u) for u in cur.fetchall()]
-            conn.close()
-            return json_response({'users': users}, req_id)
-        
-        elif method == 'user.create':
-            if not user['is_manager']:
-                return error_response('Manager access required', req_id)
-            
-            name = params.get('full_name')
-            login = params.get('login')
-            pwd = params.get('password')
-            phone = params.get('phone', '')
-            is_manager = params.get('is_manager', False)
-            
-            if not name or not login or not pwd:
-                return error_response('Missing required fields', req_id)
-            
-            conn = get_db()
-            cur = conn.cursor()
-            
-            # Проверка существования логина
-            cur.execute("SELECT id FROM users WHERE login = ?", (login,))
-            if cur.fetchone():
-                conn.close()
-                return error_response('Login already exists', req_id)
-            
-            # Генерация счета
-            cur.execute("SELECT COUNT(*) FROM users")
-            count = cur.fetchone()[0]
-            account = f'ACC{count + 100:03d}'
-            balance = 1000 if not is_manager else 0
-            
-            cur.execute("INSERT INTO users (full_name, login, password, phone, account, balance, is_manager) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                      (name, login, hash_password(pwd), phone, account, balance, is_manager))
-            
-            conn.commit()
-            conn.close()
-            return json_response({'success': True, 'account': account}, req_id)
+            return jsonify({'result': 'Transfer successful'})
         
         else:
-            return error_response('Method not found', req_id)
+            return jsonify({'error': 'Method not found'})
             
     except Exception as e:
-        return error_response(f'Server error: {str(e)}', data.get('id', 1) if 'data' in locals() else 1)
-
-def json_response(result, req_id):
-    return jsonify({'jsonrpc': '2.0', 'result': result, 'id': req_id})
-
-def error_response(message, req_id):
-    return jsonify({'jsonrpc': '2.0', 'error': {'code': -32000, 'message': message}, 'id': req_id})
+        return jsonify({'error': str(e)})
