@@ -42,22 +42,6 @@ document.addEventListener('DOMContentLoaded', function() {
             loginSection.style.display = 'block';
         });
     
-    // Загружаем тестовых пользователей
-    callRpcMethod('get_public_info')
-        .then(function(data) {
-            const usersList = document.getElementById('test-users-list');
-            if (usersList && data.test_users) {
-                usersList.innerHTML = '';
-                data.test_users.forEach(function(user) {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<strong>${user.full_name}</strong> - логин: ${user.login}, пароль: ${user.is_manager ? 'admin123' : 'client123'}`;
-                    usersList.appendChild(li);
-                });
-            }
-        })
-        .catch(function(error) {
-            console.error('Failed to load test users:', error);
-        });
 });
 </script>
 {% endblock %}
@@ -72,9 +56,11 @@ document.addEventListener('DOMContentLoaded', function() {
         <p>Для работы с банковской системой необходимо войти в систему.</p>
         <p><a href="/rgz/login">Войти в систему</a></p>
         
-        <h3>Тестовые пользователи:</h3>
-        <ul id="test-users-list">
-            <!-- Список будет загружен через JavaScript -->
+        <h3>Используйте существующие учетные записи:</h3>
+        <ul>
+            <li><strong>Администратор</strong> - логин: admin, пароль: admin123</li>
+            <li><strong>Клиент 1</strong> - логин: client1, пароль: client123</li>
+            <li><strong>Клиент 2</strong> - логин: client2, пароль: client123</li>
         </ul>
     </div>
 {% endblock %}
