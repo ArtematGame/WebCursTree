@@ -20,8 +20,8 @@ function callRpcMethod(method, params = {}) {
     })
     .then(function(data) {
         if (data.error) {
-            console.error('RPC Error:', data.error);
-            throw new Error(data.error.message || 'Unknown error');
+            console.error('Ошибка RPC:', data.error);
+            throw new Error(data.error.message || 'Неизвестная ошибка');
         }
         return data.result;
     });
@@ -34,10 +34,10 @@ function loadUserInfo() {
             return user;
         })
         .catch(function(error) {
-            if (error.message === 'Unauthorized') {
+            if (error.message === 'Не авторизован' || error.message === 'Unauthorized') {
                 return null; // Пользователь не авторизован
             }
-            console.error('Failed to load user info:', error);
+            console.error('Ошибка загрузки информации о пользователе:', error);
             throw error;
         });
 }
@@ -51,7 +51,7 @@ function performLogin(login, password) {
 function performTransfer(toAccount, amount, description) {
     return callRpcMethod('transfer', {
         to_account: toAccount,
-        amount: amount,
+        amount: parseFloat(amount),
         description: description
     });
 }

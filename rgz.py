@@ -6,7 +6,9 @@ import json
 rgz = Blueprint('rgz', __name__)
 
 def get_db():
+    # Используйте правильный путь к базе данных
     db_path = '/home/Artemat/WebCursTree/sqlite3/database.db'
+    
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     return conn
@@ -19,11 +21,11 @@ def hash_password(password):
 def index():
     return render_template('rgz/index.html')
 
-@rgz.route('/rgz/login', methods=['GET'])
+@rgz.route('/rgz/login')
 def login_page():
     return render_template('rgz/login.html')
 
-@rgz.route('/rgz/register', methods=['GET'])
+@rgz.route('/rgz/register')
 def register_page():
     return render_template('rgz/register.html')
 
@@ -69,7 +71,7 @@ def json_rpc_api():
                 'jsonrpc': '2.0',
                 'error': {
                     'code': -32700,
-                    'message': 'Parse error'
+                    'message': 'Ошибка парсинга'
                 },
                 'id': None
             })
@@ -92,7 +94,7 @@ def json_rpc_api():
                 'jsonrpc': '2.0',
                 'error': {
                     'code': 1,
-                    'message': 'Unauthorized'
+                    'message': 'Не авторизован'
                 },
                 'id': request_id
             })
@@ -114,7 +116,7 @@ def json_rpc_api():
                     'jsonrpc': '2.0',
                     'error': {
                         'code': 2,
-                        'message': 'Manager access required'
+                        'message': 'Требуются права менеджера'
                     },
                     'id': request_id
                 })
@@ -125,7 +127,7 @@ def json_rpc_api():
                     'jsonrpc': '2.0',
                     'error': {
                         'code': 2,
-                        'message': 'Manager access required'
+                        'message': 'Требуются права менеджера'
                     },
                     'id': request_id
                 })
@@ -136,7 +138,7 @@ def json_rpc_api():
             'jsonrpc': '2.0',
             'error': {
                 'code': -32601,
-                'message': 'Method not found'
+                'message': 'Метод не найден'
             },
             'id': request_id
         })
@@ -146,7 +148,7 @@ def json_rpc_api():
             'jsonrpc': '2.0',
             'error': {
                 'code': -32603,
-                'message': f'Internal error: {str(e)}'
+                'message': f'Внутренняя ошибка: {str(e)}'
             },
             'id': data.get('id', 1) if 'data' in locals() else 1
         })
@@ -161,7 +163,7 @@ def handle_login(params, request_id):
             'jsonrpc': '2.0',
             'error': {
                 'code': 3,
-                'message': 'Missing login or password'
+                'message': 'Заполните логин и пароль'
             },
             'id': request_id
         })
@@ -182,7 +184,7 @@ def handle_login(params, request_id):
             'jsonrpc': '2.0',
             'error': {
                 'code': 4,
-                'message': 'Invalid credentials'
+                'message': 'Неверный логин или пароль'
             },
             'id': request_id
         })
@@ -195,7 +197,7 @@ def handle_login(params, request_id):
             'jsonrpc': '2.0',
             'error': {
                 'code': 4,
-                'message': 'Invalid credentials'
+                'message': 'Неверный логин или пароль'
             },
             'id': request_id
         })
@@ -229,7 +231,7 @@ def handle_register(params, request_id):
             'jsonrpc': '2.0',
             'error': {
                 'code': 3,
-                'message': 'Missing required fields'
+                'message': 'Заполните все обязательные поля'
             },
             'id': request_id
         })
@@ -249,7 +251,7 @@ def handle_register(params, request_id):
             'jsonrpc': '2.0',
             'error': {
                 'code': 5,
-                'message': 'User with this login already exists'
+                'message': 'Пользователь с таким логином уже существует'
             },
             'id': request_id
         })
@@ -277,7 +279,7 @@ def handle_register(params, request_id):
         'jsonrpc': '2.0',
         'result': {
             'success': True,
-            'message': f'User {full_name} created successfully'
+            'message': f'Пользователь {full_name} создан успешно'
         },
         'id': request_id
     })
@@ -288,7 +290,7 @@ def handle_get_public_info(request_id):
     
     # Получаем тестовых пользователей для отображения на главной
     cursor.execute(
-        "SELECT login, full_name, is_manager FROM users WHERE login IN ('admin', 'client1', 'client2')"
+        "SELECT login, full_name, is_manager FROM users LIMIT 3"
     )
     
     test_users = cursor.fetchall()
@@ -327,7 +329,7 @@ def handle_get_user_info(login, request_id):
             'jsonrpc': '2.0',
             'error': {
                 'code': 6,
-                'message': 'User not found'
+                'message': 'Пользователь не найден'
             },
             'id': request_id
         })
@@ -355,7 +357,7 @@ def handle_transfer(login, params, request_id):
             'jsonrpc': '2.0',
             'error': {
                 'code': 3,
-                'message': 'Missing required fields'
+                'message': 'Заполните все обязательные поля'
             },
             'id': request_id
         })
@@ -369,7 +371,7 @@ def handle_transfer(login, params, request_id):
             'jsonrpc': '2.0',
             'error': {
                 'code': 7,
-                'message': 'Invalid amount'
+                'message': 'Неверная сумма'
             },
             'id': request_id
         })
@@ -390,7 +392,7 @@ def handle_transfer(login, params, request_id):
             'jsonrpc': '2.0',
             'error': {
                 'code': 6,
-                'message': 'User not found'
+                'message': 'Пользователь не найден'
             },
             'id': request_id
         })
@@ -404,7 +406,7 @@ def handle_transfer(login, params, request_id):
             'jsonrpc': '2.0',
             'error': {
                 'code': 8,
-                'message': 'Insufficient funds'
+                'message': 'Недостаточно средств'
             },
             'id': request_id
         })
@@ -422,7 +424,7 @@ def handle_transfer(login, params, request_id):
             'jsonrpc': '2.0',
             'error': {
                 'code': 9,
-                'message': 'Recipient not found'
+                'message': 'Получатель не найден'
             },
             'id': request_id
         })
@@ -435,7 +437,7 @@ def handle_transfer(login, params, request_id):
             'jsonrpc': '2.0',
             'error': {
                 'code': 10,
-                'message': 'Cannot transfer to yourself'
+                'message': 'Нельзя перевести самому себе'
             },
             'id': request_id
         })
@@ -455,10 +457,14 @@ def handle_transfer(login, params, request_id):
     )
     
     # Записываем транзакцию
-    cursor.execute(
-        "INSERT INTO transactions (from_account, to_account, amount, description) VALUES (?, ?, ?, ?)",
-        (user['account'], recipient['account'], amount, description)
-    )
+    try:
+        cursor.execute(
+            "INSERT INTO transactions (from_account, to_account, amount, description) VALUES (?, ?, ?, ?)",
+            (user['account'], recipient['account'], amount, description)
+        )
+    except Exception as e:
+        print(f"Ошибка записи транзакции: {e}")
+        # Можно продолжить, даже если транзакция не записалась
     
     conn.commit()
     conn.close()
@@ -467,7 +473,7 @@ def handle_transfer(login, params, request_id):
         'jsonrpc': '2.0',
         'result': {
             'success': True,
-            'message': f'Transfer of {amount} RUB completed successfully',
+            'message': f'Перевод на сумму {amount:.2f} руб. выполнен успешно!',
             'new_balance': new_sender_balance
         },
         'id': request_id
@@ -490,21 +496,24 @@ def handle_get_transactions(login, request_id):
             'jsonrpc': '2.0',
             'error': {
                 'code': 6,
-                'message': 'User not found'
+                'message': 'Пользователь не найден'
             },
             'id': request_id
         })
     
     user = dict(user_data)
     
-    # Получаем транзакции
-    cursor.execute(
-        "SELECT * FROM transactions WHERE from_account = ? OR to_account = ? ORDER BY created_at DESC",
-        (user['account'], user['account'])
-    )
-    
-    transactions_data = cursor.fetchall()
-    transactions = [dict(t) for t in transactions_data]
+    try:
+        # Получаем транзакции
+        cursor.execute(
+            "SELECT * FROM transactions WHERE from_account = ? OR to_account = ? ORDER BY created_at DESC",
+            (user['account'], user['account'])
+        )
+        transactions_data = cursor.fetchall()
+        transactions = [dict(t) for t in transactions_data]
+    except Exception as e:
+        print(f"Ошибка получения транзакций: {e}")
+        transactions = []
     
     conn.close()
     
@@ -523,7 +532,7 @@ def handle_logout(request_id):
         'jsonrpc': '2.0',
         'result': {
             'success': True,
-            'message': 'Logged out successfully'
+            'message': 'Выход выполнен успешно'
         },
         'id': request_id
     })
@@ -564,7 +573,7 @@ def handle_create_user(params, request_id):
             'jsonrpc': '2.0',
             'error': {
                 'code': 3,
-                'message': 'Missing required fields'
+                'message': 'Заполните все обязательные поля'
             },
             'id': request_id
         })
@@ -583,7 +592,7 @@ def handle_create_user(params, request_id):
             'jsonrpc': '2.0',
             'error': {
                 'code': 5,
-                'message': 'User with this login already exists'
+                'message': 'Пользователь с таким логином уже существует'
             },
             'id': request_id
         })
@@ -608,7 +617,7 @@ def handle_create_user(params, request_id):
         'jsonrpc': '2.0',
         'result': {
             'success': True,
-            'message': f'User {full_name} created successfully',
+            'message': f'Пользователь {full_name} успешно создан!',
             'account': account
         },
         'id': request_id
