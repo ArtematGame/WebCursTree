@@ -6,9 +6,11 @@
     <h1>Банковская система</h1>
     
     {% if user %}
-        <p>Добро пожаловать, {{ user.full_name }}!</p>
-        <p>Ваш счет: {{ user.account }}</p>
-        <p>Баланс: {{ user.balance }} руб.</p>
+        <div>
+            <p>Добро пожаловать, {{ user.full_name }}!</p>
+            <p>Ваш счет: {{ user.account }}</p>
+            <p>Баланс: {{ user.balance }} руб.</p>    
+        </div>
         
         <div>
             <a href="/rgz/dashboard">Личный кабинет</a> |
@@ -28,6 +30,7 @@
         <ul>
             <li>Менеджер: admin / admin123</li>
             <li>Клиент: client1 / client123</li>
+            <li>Клиент: client2 / client123</li>
         </ul>
     {% endif %}
 {% endblock %}
